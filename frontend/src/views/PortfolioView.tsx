@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 import { apiRequest, PortfolioItem as ApiPortfolioItem } from "@/lib/api";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
+import { ReadyToStartBanner } from "@/components/ReadyToStartBanner";
 import { 
   ChevronLeft, ChevronRight, X, ExternalLink, MessageCircle, 
   Sparkles, CheckCircle2, ArrowRight, Laptop, Smartphone, Monitor,
@@ -333,53 +334,7 @@ export function PortfolioView() {
       </section>
 
       {/* 5. "Ready To Start Your Project?" WhatsApp CTA Banner */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-[#000E38] text-white p-8 sm:p-12 lg:p-14 relative overflow-hidden shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-10">
-            {/* Glow effect */}
-            <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
-
-            {/* Left Content */}
-            <div className="space-y-6 max-w-xl text-center lg:text-start z-10">
-              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
-                {locale === "ar" ? "هل أنت مستعد لبدء مشروعك القادم؟" : "Ready To Start Your Project?"}
-              </h3>
-              <p className="text-sm text-blue-200/90 leading-relaxed">
-                {locale === "ar"
-                  ? "فريقنا المتخصص في الرياض والمنامة مستعد لتحويل رؤيتك الرقمية إلى واقع ملموس يحقق أعلى العوائد."
-                  : "Our creative and engineering teams in Riyadh and Manama are ready to accelerate your digital growth."}
-              </p>
-
-              <div>
-                <a
-                  href="https://wa.me/966500000000?text=Hello%20Smart%20Touch,%20I%20would%20like%20to%20inquire%20about%20a%20project"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white text-slate-900 font-bold text-sm shadow-lg hover:bg-slate-100 hover:scale-105 active:scale-95 transition-all"
-                >
-                  <MessageCircle className="w-5 h-5 text-emerald-600 fill-emerald-500" />
-                  <span>{locale === "ar" ? "تواصل عبر واتساب" : "Chat on WhatsApp"}</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Right: Floating Mockup Showcase */}
-            <div className="relative w-full lg:w-1/2 flex items-center justify-center z-10">
-              <div className="grid grid-cols-3 gap-3 transform rotate-6 scale-95 hover:scale-100 transition-transform duration-500">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl bg-slate-800 p-1 shadow-2xl -translate-y-4">
-                  <img src="/images/portfolio/shanifi-donuts@2x.png" alt="mockup" className="w-full h-full object-cover rounded-lg" />
-                </div>
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl bg-[#001D6E] p-1 shadow-2xl translate-y-2">
-                  <img src="/images/portfolio/shanifi-hero-mockup@2x.png" alt="mockup" className="w-full h-full object-cover rounded-lg" />
-                </div>
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl bg-amber-600 p-1 shadow-2xl -translate-y-2">
-                  <img src="/images/portfolio/shanifi-showcase-collage@2x.png" alt="mockup" className="w-full h-full object-cover rounded-lg" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ReadyToStartBanner bgVariant="white" />
 
       {/* 6. Testimonials Section */}
       <TestimonialsSection />

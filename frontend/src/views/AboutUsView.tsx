@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 import { InquiryModal } from "@/components/InquiryModal";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
+import { ReadyToStartBanner } from "@/components/ReadyToStartBanner";
 
 export function AboutUsView() {
   const { locale, isRtl } = useLanguage();
@@ -155,36 +156,9 @@ export function AboutUsView() {
       </section>
 
       {/* ========================================================= */}
-      {/* SECTION 5: WANT TO GET STARTED? (Deep Blue Wave CTA Banner) */}
+      {/* SECTION 5: READY TO START YOUR PROJECT? (Banner) */}
       {/* ========================================================= */}
-      <section className="py-8 sm:py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-          <div className="relative rounded-2xl overflow-hidden shadow-xl bg-gradient-to-r from-[#07257A] via-[#0E3EAF] to-[#07257A] p-8 sm:p-12 md:p-14 flex flex-col sm:flex-row items-center justify-between gap-8">
-            {/* Subtle wave vector background */}
-            <div className="absolute inset-0 pointer-events-none opacity-20">
-              <svg className="w-full h-full" viewBox="0 0 1200 200" fill="none" preserveAspectRatio="none">
-                <path d="M0,100 C300,180 600,20 900,100 C1050,140 1150,60 1200,100 L1200,200 L0,200 Z" fill="#ffffff" />
-                <path d="M0,130 C200,60 500,160 800,110 C1000,70 1100,150 1200,130 L1200,200 L0,200 Z" fill="#ffffff" opacity="0.5" />
-              </svg>
-            </div>
-
-            <div className="relative z-10 text-center sm:text-start">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
-                {locale === "ar" ? "هل ترغب في البدء معنا؟" : "Want To Get Started?"}
-              </h2>
-            </div>
-
-            <div className="relative z-10 shrink-0">
-              <button
-                onClick={() => setIsInquiryOpen(true)}
-                className="px-8 sm:px-10 py-3.5 sm:py-4 rounded-md bg-white text-[#07257A] font-extrabold text-sm sm:text-base tracking-wider uppercase shadow-xl hover:bg-slate-100 hover:scale-105 active:scale-95 transition-all"
-              >
-                {locale === "ar" ? "تواصل معنا" : "TALK TO US"}
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ReadyToStartBanner bgVariant="white" />
 
       {/* ========================================================= */}
       {/* SECTION 6: TOP CLIENTS (Grayscale Monochromatic Logos) */}

@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 import { apiRequest, ServiceItem } from "@/lib/api";
 import { FALLBACK_SERVICES } from "@/data/fallbackServices";
+import { ReadyToStartBanner } from "@/components/ReadyToStartBanner";
 import { 
   Check, ArrowRight, ArrowUpRight, Sparkles, ChevronRight, 
   Send, CheckCircle2, ShieldCheck, Zap, Layers, Cpu, Cloud, 
@@ -668,61 +669,15 @@ export function ServiceDetailView({ slug }: ServiceDetailProps) {
               // ---------------- THEMED CTA BANNER ----------------
               case "cta_banner": {
                 const title = getLocalizedField(section.title);
-                const subtitle = getLocalizedField(section.subtitle);
-                const btnText = getLocalizedField(section.button_text) || "Contact Us";
-                const btnLink = section.button_link || "/contact";
-                const image = section.image;
-                const isWhatsapp = section.theme === "whatsapp";
 
                 return (
-                  <section
-                    key={section.id || sIdx}
-                    className="rounded-3xl bg-[#000B20] text-white overflow-hidden shadow-2xl relative min-h-[300px] flex items-center"
-                  >
-                    <div className="grid grid-cols-1 lg:grid-cols-12 w-full items-center p-8 sm:p-12 lg:p-14 gap-8">
-                      <div className="lg:col-span-7 space-y-4 z-10">
-                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-                          {title}
-                        </h2>
-                        {subtitle && (
-                          <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl">
-                            {subtitle}
-                          </p>
-                        )}
-                        <div className="pt-4">
-                          {isWhatsapp ? (
-                            <a
-                              href={btnLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-white text-[#0B132B] font-bold text-xs sm:text-sm shadow-xl hover:bg-slate-100 transition-all"
-                            >
-                              <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-600" />
-                              <span>{btnText}</span>
-                            </a>
-                          ) : (
-                            <button
-                              onClick={() => setIsInquiryModalOpen(true)}
-                              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white text-[#0B132B] font-bold text-xs sm:text-sm shadow-xl hover:bg-slate-100 transition-all"
-                            >
-                              <span>{btnText}</span>
-                              <ArrowRight className={`w-4 h-4 ${isRtl ? "rotate-180" : ""}`} />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      {image && (
-                        <div className="lg:col-span-5 flex justify-center lg:justify-end">
-                          <img
-                            src={image}
-                            alt={title}
-                            className="max-h-[320px] w-auto object-contain rounded-2xl"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </section>
+                  <div key={section.id || sIdx} className="w-full">
+                    <ReadyToStartBanner 
+                      bgVariant="transparent"
+                      titleEn={typeof section.title === "object" ? section.title?.en : title}
+                      titleAr={typeof section.title === "object" ? section.title?.ar : title}
+                    />
+                  </div>
                 );
               }
 
@@ -760,22 +715,7 @@ export function ServiceDetailView({ slug }: ServiceDetailProps) {
               </div>
             )}
 
-            <div className="rounded-3xl bg-[#001D6E] text-white p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
-              <div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-2">
-                  {locale === "ar" ? "جاهز لبدء مشروعك مع سمارت تاتش؟" : "Ready To Start Your Project?"}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-200">
-                  {locale === "ar" ? "تواصل مع خبرائنا اليوم لمناقشة متطلباتك والحصول على استشارة متخصصة." : "Contact our specialists today to discuss your requirements and get a custom strategy."}
-                </p>
-              </div>
-              <Link
-                href={siteUrls.contact(locale)}
-                className="px-6 py-3.5 rounded-xl bg-white text-[#001D6E] hover:bg-slate-100 font-bold text-xs sm:text-sm shadow-md transition-all shrink-0 inline-block text-center"
-              >
-                {locale === "ar" ? "تواصل معنا" : "Contact Us"}
-              </Link>
-            </div>
+            <ReadyToStartBanner bgVariant="transparent" className="mt-8" />
           </div>
         )}
       </div>

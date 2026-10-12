@@ -145,7 +145,7 @@ export const FALLBACK_SERVICES: ServiceItem[] = [
           "ar": "تواصل معنا"
         },
         "button_link": "/contact",
-        "image": "/images/services/web-dev-cta-banner.png",
+        "image": "/images/banners/ready-to-start-collage.png",
         "theme": "laptop"
       }
     ],
@@ -465,7 +465,7 @@ export const FALLBACK_SERVICES: ServiceItem[] = [
           "ar": "تواصل معنا"
         },
         "button_link": "/contact",
-        "image": "/images/services/seo-cta-banner.png",
+        "image": "/images/banners/ready-to-start-collage.png",
         "theme": "google"
       }
     ],
@@ -691,7 +691,7 @@ export const FALLBACK_SERVICES: ServiceItem[] = [
           "ar": "تواصل معنا"
         },
         "button_link": "/contact",
-        "image": "/images/services/seo-cta-banner.png",
+        "image": "/images/banners/ready-to-start-collage.png",
         "theme": "google"
       }
     ],
@@ -971,7 +971,7 @@ export const FALLBACK_SERVICES: ServiceItem[] = [
           "ar": "تواصل معنا"
         },
         "button_link": "/contact",
-        "image": "/images/services/growth-cta-banner.png",
+        "image": "/images/banners/ready-to-start-collage.png",
         "theme": "chart"
       }
     ],
@@ -1263,7 +1263,7 @@ export const FALLBACK_SERVICES: ServiceItem[] = [
           "ar": "ابدأ معنا اليوم"
         },
         "button_link": "/contact",
-        "image": "/images/services/subscription-cta-banner.png",
+        "image": "/images/banners/ready-to-start-collage.png",
         "theme": "silhouettes"
       }
     ],
@@ -1617,7 +1617,7 @@ export const FALLBACK_SERVICES: ServiceItem[] = [
           "ar": "تواصل معنا"
         },
         "button_link": "/contact",
-        "image": "/images/services/hosting-cta-banner.png",
+        "image": "/images/banners/ready-to-start-collage.png",
         "theme": "server"
       }
     ],
@@ -1845,7 +1845,7 @@ export const FALLBACK_SERVICES: ServiceItem[] = [
           "ar": "تحدث معنا عبر واتساب"
         },
         "button_link": "https://wa.me/966500000000",
-        "image": "/images/services/crm-cta-banner.png",
+        "image": "/images/banners/ready-to-start-collage.png",
         "theme": "whatsapp"
       }
     ],
@@ -2006,7 +2006,7 @@ export const FALLBACK_SERVICES: ServiceItem[] = [
           "ar": "تحدث معنا عبر واتساب"
         },
         "button_link": "https://wa.me/966500000000",
-        "image": "/images/services/martech-cta-banner.png",
+        "image": "/images/banners/ready-to-start-collage.png",
         "theme": "consultation"
       }
     ],
@@ -2165,7 +2165,7 @@ export const FALLBACK_SERVICES: ServiceItem[] = [
           "ar": "تحدث معنا عبر واتساب"
         },
         "button_link": "https://wa.me/966500000000",
-        "image": "/images/services/ai-cta-banner.png",
+        "image": "/images/banners/ready-to-start-collage.png",
         "theme": "whatsapp"
       }
     ],

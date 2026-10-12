@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 import { PortfolioItem, apiRequest } from "@/lib/api";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
+import { ReadyToStartBanner } from "@/components/ReadyToStartBanner";
 import { ArrowRight, ArrowLeft, MessageCircle, Star, Sparkles } from "lucide-react";
 
 interface PortfolioDetailViewProps {
@@ -343,46 +344,7 @@ export function PortfolioDetailView({ slug }: PortfolioDetailViewProps) {
       </section>
 
       {/* 8. WhatsApp CTA Section: "Ready To Start Your Project?" */}
-      <section className="py-14 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#01081F] via-[#051139] to-[#0A1A55] text-white p-8 sm:p-12 lg:p-16 shadow-2xl border border-blue-900/50 flex flex-col md:flex-row items-center justify-between gap-8">
-            {/* Background Grid Pattern */}
-            <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#38BDF8_1px,transparent_1px)] [background-size:20px_20px]" />
-
-            <div className="relative z-10 max-w-xl space-y-4 text-center md:text-left">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-                {locale === "ar" ? "جاهز لبدء مشروعك القادم؟" : "Ready To Start Your Project?"}
-              </h2>
-              <p className="text-sm text-blue-200/90 leading-relaxed">
-                {locale === "ar"
-                  ? "تواصل مع خبراء سمارت تاتش لبناء منصتك الرقمية وهويتك البصرية بأعلى المعايير."
-                  : "Let's engineer exceptional digital platforms and high-converting marketing campaigns together."}
-              </p>
-              <div className="pt-2 flex flex-wrap justify-center md:justify-start gap-4">
-                <a
-                  href="https://api.whatsapp.com/send?phone=966500000000"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-[#001D6E] font-bold text-sm transition-all shadow-lg hover:shadow-xl active:scale-95 cursor-pointer"
-                >
-                  <MessageCircle className="w-4 h-4 text-emerald-500 fill-emerald-500" />
-                  <span>{locale === "ar" ? "تواصل عبر واتساب" : "Chat on WhatsApp"}</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Right: Mockup collage preview */}
-            <div className="relative z-10 shrink-0 w-64 sm:w-72 lg:w-80 h-52 relative hidden sm:flex items-center justify-center">
-              <div className="absolute w-40 h-28 bg-white/10 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 -rotate-12 -translate-x-8 -translate-y-4 overflow-hidden">
-                <img src="/images/portfolio/shanifi-donuts@2x.png" alt="mockup 1" className="w-full h-full object-cover" />
-              </div>
-              <div className="absolute w-44 h-32 bg-white/15 backdrop-blur-md rounded-xl shadow-2xl border border-white/30 rotate-6 translate-x-6 translate-y-2 overflow-hidden z-10">
-                <img src="/images/portfolio/shanifi-hero-mockup@2x.png" alt="mockup 2" className="w-full h-full object-cover" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ReadyToStartBanner bgVariant="white" />
 
       {/* 9. Customer Testimonials Section: "What Our Customer Think" */}
       <TestimonialsSection />

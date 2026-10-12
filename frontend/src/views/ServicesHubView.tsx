@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 import { InquiryModal } from "@/components/InquiryModal";
+import { ReadyToStartBanner } from "@/components/ReadyToStartBanner";
 
 export function ServicesHubView() {
   const { locale, isRtl } = useLanguage();
@@ -538,6 +539,9 @@ export function ServicesHubView() {
           </div>
         </div>
       </section>
+
+      {/* Ready To Start Your Project Banner */}
+      <ReadyToStartBanner bgVariant="white" />
 
       {/* ========================================================= */}
       {/* 5. TOP CLIENTS MONOCHROMATIC LOGOS STRIP */}

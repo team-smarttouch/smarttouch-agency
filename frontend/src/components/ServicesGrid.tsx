@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 import { apiRequest, ServiceItem } from "@/lib/api";
+import { ReadyToStartBanner } from "@/components/ReadyToStartBanner";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 // Initial SSR-safe fallback data based on the 8 official seeded services
@@ -265,19 +266,8 @@ export function ServicesGrid() {
           })}
         </div>
 
-        {/* Wide Full-Width Dark Blue CTA Banner matching template 100% */}
-        <div className="mt-14 rounded-2xl bg-[#001D6E] text-white p-7 sm:p-9 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
-          <h3 className="text-2xl sm:text-3xl font-black text-white text-center sm:text-start tracking-tight">
-            {locale === "ar" ? "هل ترغب في بدء مشروعك الآن؟" : "Want To Get Started?"}
-          </h3>
-
-          <Link
-            href={siteUrls.contact(locale)}
-            className="px-8 py-3.5 rounded-lg bg-white text-[#001D6E] hover:bg-slate-100 font-bold text-sm shadow-md transition-all shrink-0 hover:scale-105 active:scale-95 inline-block text-center cursor-pointer"
-          >
-            {locale === "ar" ? "تواصل معنا" : "Contact Us"}
-          </Link>
-        </div>
+        {/* Wide Full-Width Ready To Start Your Project CTA Banner */}
+        <ReadyToStartBanner bgVariant="transparent" className="mt-6" />
       </div>
     </section>
   );
