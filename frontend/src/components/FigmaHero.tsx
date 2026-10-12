@@ -6,7 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 
 interface HeroProps {
-  onOpenInquiry: () => void;
+  onOpenInquiry?: () => void;
 }
 
 export function FigmaHero({ onOpenInquiry }: HeroProps) {
@@ -82,14 +82,13 @@ export function FigmaHero({ onOpenInquiry }: HeroProps) {
               </p>
 
               <div className="flex flex-wrap items-center gap-3.5">
-                {/* Button 1: Inquire Now (Blue filled) */}
-                <button
-                  type="button"
-                  onClick={onOpenInquiry}
-                  className="px-6 py-2.5 rounded-md bg-[#0088e8] hover:bg-[#0077cc] text-white font-semibold text-sm transition-all shadow-md shadow-blue-500/25 active:scale-95 cursor-pointer"
+                {/* Button 1: Inquire Now (Blue filled, direct link to Contact Us) */}
+                <Link
+                  href={siteUrls.contact(locale)}
+                  className="px-6 py-2.5 rounded-md bg-[#0088e8] hover:bg-[#0077cc] text-white font-semibold text-sm transition-all shadow-md shadow-blue-500/25 active:scale-95 inline-block text-center cursor-pointer"
                 >
                   {locale === "ar" ? "تواصل معنا الآن" : "Inquire Now"}
-                </button>
+                </Link>
 
                 {/* Button 2: Our Services (White filled with dark text) */}
                 <Link

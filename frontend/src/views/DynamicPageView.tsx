@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 import { apiRequest, DynamicPageItem } from "@/lib/api";
+import { FALLBACK_PAGES } from "@/data/fallbackPages";
 import { ChevronRight, Sparkles, AlertCircle } from "lucide-react";
 
 interface DynamicPageViewProps {
@@ -13,19 +14,43 @@ interface DynamicPageViewProps {
 
 export function DynamicPageView({ slug }: DynamicPageViewProps) {
   const { locale, isRtl, getLocalized } = useLanguage();
-  const [page, setPage] = useState<DynamicPageItem | null>(null);
-  const [loading, setLoading] = useState(true);
+
+  const fallbackPage = React.useMemo(() => {
+    const clean = slug.replace(/\.html$/, "").toLowerCase();
+    return (
+      FALLBACK_PAGES.find((p) => {
+        const en = (p.slug?.en || "").toLowerCase();
+        const ar = (p.slug?.ar || "").toLowerCase();
+        return en === clean || ar === clean;
+      }) || null
+    );
+  }, [slug]);
+
+  const [page, setPage] = useState<DynamicPageItem | null>(() => fallbackPage);
+  const [loading, setLoading] = useState(() => !fallbackPage);
 
   useEffect(() => {
+    let isMounted = true;
     apiRequest(`/pages/${slug}`)
       .then((res) => {
-        if (res.success && res.data) {
+        if (isMounted && res.success && res.data) {
           setPage(res.data);
         }
       })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [slug]);
+      .catch((err) => {
+        console.warn("Backend API unavailable, using bundled page content:", err?.message);
+        if (isMounted && fallbackPage) {
+          setPage(fallbackPage);
+        }
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [slug, fallbackPage]);
 
   if (loading) {
     return (

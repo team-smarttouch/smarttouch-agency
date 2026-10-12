@@ -28,15 +28,17 @@ export interface ServiceItem {
   title: TranslatableText;
   slug: TranslatableText;
   short_description: TranslatableText;
-  full_content?: TranslatableText;
+  full_content?: TranslatableText | null;
   icon: string;
-  features?: Array<{ en: string; ar: string }>;
-  sections?: any[];
-  featured_image?: string;
+  features?: Array<{ en: string; ar: string }> | null;
+  sections?: any[] | null;
+  featured_image?: string | null;
   sort_order: number;
   is_active: boolean;
   status?: "published" | "draft";
-  seo?: SeoItem;
+  seo?: SeoItem | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface DynamicPageItem {
@@ -47,7 +49,8 @@ export interface DynamicPageItem {
   template: string;
   is_active: boolean;
   created_at: string;
-  seo?: SeoItem;
+  updated_at?: string;
+  seo?: SeoItem | null;
 }
 
 export interface PostItem {

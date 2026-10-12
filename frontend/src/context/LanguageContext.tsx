@@ -114,10 +114,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       setLocaleState("ar");
       document.documentElement.dir = "rtl";
       document.documentElement.lang = "ar";
+      if (pathname === "/ar" || pathname === "/ar/") {
+        document.title = "شركة سمارت تاتش للتسويق الالكترونى في السعودية";
+      }
     } else if (pathname.startsWith("/en") || pathname === "/") {
       setLocaleState("en");
       document.documentElement.dir = "ltr";
       document.documentElement.lang = "en";
+      if (pathname === "/" || pathname === "/en" || pathname === "/en/") {
+        document.title = "Smart Touch | Digital Marketing Agency and Services in KSA";
+      }
     }
   }, [pathname]);
 

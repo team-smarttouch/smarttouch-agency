@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 import { apiRequest, ServiceItem } from "@/lib/api";
-import { InquiryModal } from "./InquiryModal";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 // Initial SSR-safe fallback data based on the 8 official seeded services
@@ -118,7 +117,6 @@ const initialServices: ServiceItem[] = [
 
 export function ServicesGrid() {
   const { locale, isRtl } = useLanguage();
-  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [services, setServices] = useState<ServiceItem[]>(initialServices);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -273,16 +271,14 @@ export function ServicesGrid() {
             {locale === "ar" ? "هل ترغب في بدء مشروعك الآن؟" : "Want To Get Started?"}
           </h3>
 
-          <button
-            onClick={() => setIsInquiryOpen(true)}
-            className="px-8 py-3.5 rounded-lg bg-white text-[#001D6E] hover:bg-slate-100 font-bold text-sm shadow-md transition-all shrink-0 hover:scale-105 active:scale-95 cursor-pointer"
+          <Link
+            href={siteUrls.contact(locale)}
+            className="px-8 py-3.5 rounded-lg bg-white text-[#001D6E] hover:bg-slate-100 font-bold text-sm shadow-md transition-all shrink-0 hover:scale-105 active:scale-95 inline-block text-center cursor-pointer"
           >
             {locale === "ar" ? "تواصل معنا" : "Contact Us"}
-          </button>
+          </Link>
         </div>
       </div>
-
-      <InquiryModal isOpen={isInquiryOpen} onClose={() => setIsInquiryOpen(false)} />
     </section>
   );
 }

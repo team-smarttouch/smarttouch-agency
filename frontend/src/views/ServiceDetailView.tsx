@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 import { apiRequest, ServiceItem } from "@/lib/api";
+import { FALLBACK_SERVICES } from "@/data/fallbackServices";
 import { 
   Check, ArrowRight, ArrowUpRight, Sparkles, ChevronRight, 
   Send, CheckCircle2, ShieldCheck, Zap, Layers, Cpu, Cloud, 
@@ -29,8 +30,62 @@ const ICON_MAP: Record<string, React.ElementType> = {
 
 export function ServiceDetailView({ slug }: ServiceDetailProps) {
   const { t, locale, isRtl, getLocalized } = useLanguage();
-  const [service, setService] = useState<ServiceItem | null>(null);
-  const [loading, setLoading] = useState(true);
+
+  // Find pre-bundled fallback service data with comprehensive alias resolution
+  const fallbackService = React.useMemo(() => {
+    const clean = slug.replace(/^services-/, "").replace(/\.html$/, "").toLowerCase().trim();
+    
+    const aliases: Record<string, string> = {
+      "seo": "seo-services",
+      "seo-marketing": "seo-services",
+      "seo-marketing-growth": "seo-services",
+      "seo-services": "seo-services",
+      "khadamat-seo": "seo-services",
+      "web": "web-app-development",
+      "web-dev": "web-app-development",
+      "web-design": "web-app-development",
+      "web-development": "web-app-development",
+      "web-app-development": "web-app-development",
+      "crm": "crm-marketing-automation",
+      "crm-marketing": "crm-marketing-automation",
+      "crm-marketing-automation": "crm-marketing-automation",
+      "ai": "ai-data-analytics",
+      "ai-data": "ai-data-analytics",
+      "ai-data-analytics": "ai-data-analytics",
+      "ai-analytics": "ai-data-analytics",
+      "martech": "marketing-technology",
+      "marketing-technology": "marketing-technology",
+      "growth": "growth-marketing",
+      "growth-marketing": "growth-marketing",
+      "cloud": "cloud-infrastructure",
+      "cloud-hosting": "cloud-infrastructure",
+      "cloud-infrastructure": "cloud-infrastructure",
+      "subscription": "subscription-marketing",
+      "subscription-plans": "subscription-marketing",
+      "subscription-marketing": "subscription-marketing",
+    };
+
+    const targetKey = aliases[clean] || clean;
+
+    return (
+      FALLBACK_SERVICES.find((s) => {
+        const en = (s.slug?.en || "").toLowerCase();
+        const ar = (s.slug?.ar || "").toLowerCase();
+        return (
+          en === clean ||
+          ar === clean ||
+          en === targetKey ||
+          ar === targetKey ||
+          en.replace(/^services-/, "") === clean ||
+          ar.replace(/^services-/, "") === clean ||
+          en.replace(/^services-/, "") === targetKey
+        );
+      }) || null
+    );
+  }, [slug]);
+
+  const [service, setService] = useState<ServiceItem | null>(() => fallbackService);
+  const [loading, setLoading] = useState<boolean>(() => !fallbackService);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
 
@@ -43,16 +98,31 @@ export function ServiceDetailView({ slug }: ServiceDetailProps) {
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
+    let isMounted = true;
     apiRequest(`/services/${slug}`)
-      .then((res) => {
-        if (res.success && res.data) {
-          setService(res.data);
+      .then((res: any) => {
+        if (isMounted && res && res.success && res.data) {
+          if (Array.isArray(res.data.sections) && res.data.sections.length > 0) {
+            setService(res.data);
+          } else if (fallbackService) {
+            setService(fallbackService);
+          }
         }
       })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [slug]);
+      .catch((err) => {
+        console.warn("Backend API unavailable, using bundled service specification:", err?.message);
+        if (isMounted && fallbackService) {
+          setService(fallbackService);
+        }
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [slug, fallbackService]);
 
   const handleSubmitInquiry = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,7 +171,7 @@ export function ServiceDetailView({ slug }: ServiceDetailProps) {
 
   const serviceTitle = service ? getLocalized(service.title) : slug.replace(/-/g, " ");
 
-  if (loading) {
+  if (loading && !service) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center pt-24">
         <div className="flex flex-col items-center gap-4">
@@ -661,12 +731,51 @@ export function ServiceDetailView({ slug }: ServiceDetailProps) {
             }
           })
         ) : (
-          /* Fallback for legacy services without sections */
-          <div className="space-y-8 py-10">
-            <h1 className="text-4xl font-extrabold text-[#0B132B]">{serviceTitle}</h1>
-            <p className="text-slate-600 text-lg leading-relaxed">
-              {getLocalized(service?.short_description)}
-            </p>
+          /* Graceful rich presentation fallback */
+          <div className="space-y-12 py-10 max-w-4xl">
+            <div className="space-y-4">
+              <h1 className="text-3xl sm:text-5xl font-black text-[#0B132B]">{serviceTitle}</h1>
+              <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+                {service?.short_description ? getLocalized(service.short_description) : (
+                  locale === "ar"
+                    ? "حلول رقمية متقدمة مصممة خصيصاً لمساعدة الشركات على النمو وتصدر الأسواق الرقمية."
+                    : "Advanced digital solutions engineered to scale your enterprise and dominate online markets."
+                )}
+              </p>
+              {service?.featured_image && (
+                <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-100 my-6">
+                  <img src={service.featured_image} alt={serviceTitle} className="w-full h-auto object-cover" />
+                </div>
+              )}
+            </div>
+
+            {service?.features && service.features.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {service.features.map((feat: any, idx: number) => (
+                  <div key={idx} className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                    <span className="text-sm font-semibold text-slate-800">{getLocalized(feat)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="rounded-3xl bg-[#001D6E] text-white p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-bold mb-2">
+                  {locale === "ar" ? "جاهز لبدء مشروعك مع سمارت تاتش؟" : "Ready To Start Your Project?"}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-200">
+                  {locale === "ar" ? "تواصل مع خبرائنا اليوم لمناقشة متطلباتك والحصول على استشارة متخصصة." : "Contact our specialists today to discuss your requirements and get a custom strategy."}
+                </p>
+              </div>
+              <Link
+                href={siteUrls.contact(locale)}
+                className="px-6 py-3.5 rounded-xl bg-white text-[#001D6E] hover:bg-slate-100 font-bold text-xs sm:text-sm shadow-md transition-all shrink-0 inline-block text-center"
+              >
+                {locale === "ar" ? "تواصل معنا" : "Contact Us"}
+              </Link>
+            </div>
           </div>
         )}
       </div>

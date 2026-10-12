@@ -27,6 +27,7 @@ Route::get('/portfolios', [PublicController::class, 'getPortfolios']);
 Route::get('/portfolios/{slug}', [PublicController::class, 'getPortfolio']);
 Route::get('/categories', [PublicController::class, 'getCategories']);
 Route::post('/inquiries', [PublicController::class, 'submitInquiry']);
+Route::get('/settings', [PublicController::class, 'getSettings']);
 
 // Auth
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -44,12 +45,16 @@ Route::middleware('auth:sanctum')->group(function () {
     // Common Dashboard statistics
     Route::get('/dashboard/stats', [DashboardController::class, 'getStats']);
 
-    // Inquiries management (Admin role only)
+    // Inquiries & Settings management (Admin role only)
     Route::middleware('role:admin')->group(function () {
         Route::get('/dashboard/inquiries', [InquiryController::class, 'index']);
         Route::get('/dashboard/inquiries/{id}', [InquiryController::class, 'show']);
         Route::patch('/dashboard/inquiries/{id}', [InquiryController::class, 'update']);
         Route::delete('/dashboard/inquiries/{id}', [InquiryController::class, 'destroy']);
+
+        // General Agency Settings
+        Route::get('/dashboard/settings', [DashboardController::class, 'getSettings']);
+        Route::post('/dashboard/settings', [DashboardController::class, 'updateSettings']);
 
         // User management (Admin only)
         Route::get('/dashboard/users', [UserController::class, 'index']);

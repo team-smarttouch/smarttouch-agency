@@ -6,15 +6,13 @@ import { usePathname } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { siteUrls } from "@/lib/urls";
-import { Globe, Shield, Menu, X, ArrowUpRight } from "lucide-react";
-import { InquiryModal } from "./InquiryModal";
+import { Globe, Menu, X, ArrowUpRight } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname() || "/";
   const { locale, toggleLocale, t, isRtl } = useLanguage();
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
 
   const navLinks = [
     { name: t("nav.home"), href: siteUrls.home(locale) },
@@ -83,28 +81,14 @@ export function Navbar() {
                 <span>{locale === "en" ? "العربية" : "English"}</span>
               </button>
 
-              {/* Retained Dashboard Portal Link */}
+              {/* Primary Blue CTA Button - Navigates directly to Contact Us */}
               <Link
-                href={siteUrls.dashboard()}
-                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-all"
-              >
-                <Shield className="w-3.5 h-3.5 text-blue-600" />
-                <span>{t("nav.dashboard")}</span>
-                {user && (
-                  <span className="px-1.5 py-0.5 rounded text-[8px] font-bold bg-blue-600 text-white uppercase">
-                    {user.role}
-                  </span>
-                )}
-              </Link>
-
-              {/* Primary Blue CTA Button */}
-              <button
-                onClick={() => setIsInquiryOpen(true)}
+                href={siteUrls.contact(locale)}
                 className="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/25 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
               >
                 <span>{locale === "ar" ? "تواصل معنا" : "Contact Us"}</span>
                 <ArrowUpRight className={`w-3.5 h-3.5 ${isRtl ? "rotate-270" : ""}`} />
-              </button>
+              </Link>
             </div>
 
             {/* Mobile menu trigger */}
@@ -130,14 +114,6 @@ export function Navbar() {
                     {link.name}
                   </Link>
                 ))}
-                <Link
-                  href={siteUrls.dashboard()}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="py-1 text-slate-600 hover:text-blue-600 flex items-center gap-2"
-                >
-                  <Shield className="w-4 h-4 text-blue-600" />
-                  <span>{t("nav.dashboard")}</span>
-                </Link>
               </nav>
 
               <div className="pt-4 border-t border-slate-200 flex flex-col gap-3">
@@ -152,22 +128,18 @@ export function Navbar() {
                   <span>{locale === "en" ? "العربية (RTL)" : "English (LTR)"}</span>
                 </button>
 
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    setIsInquiryOpen(true);
-                  }}
-                  className="w-full py-3 rounded-lg bg-blue-600 text-white text-sm font-bold shadow-md"
+                <Link
+                  href={siteUrls.contact(locale)}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full py-3 rounded-lg bg-blue-600 text-white text-sm font-bold shadow-md block text-center"
                 >
                   {locale === "ar" ? "تواصل معنا" : "Contact Us"}
-                </button>
+                </Link>
               </div>
             </div>
           )}
         </div>
       </header>
-
-      <InquiryModal isOpen={isInquiryOpen} onClose={() => setIsInquiryOpen(false)} />
     </>
   );
 }

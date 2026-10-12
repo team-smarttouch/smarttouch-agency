@@ -1,11 +1,13 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+import { siteUrls } from "@/lib/urls";
 import { Check } from "lucide-react";
 
 interface PricingPackagesProps {
-  onOpenInquiry: () => void;
+  onOpenInquiry?: () => void;
 }
 
 export function PricingPackages({ onOpenInquiry }: PricingPackagesProps) {
@@ -97,12 +99,12 @@ export function PricingPackages({ onOpenInquiry }: PricingPackagesProps) {
                 </ul>
               </div>
 
-              <button
-                onClick={onOpenInquiry}
-                className="w-full py-3 rounded-lg border-2 border-white/80 hover:border-white text-white font-bold text-xs hover:bg-white hover:text-[#000E38] transition-all"
+              <Link
+                href={siteUrls.contact(locale)}
+                className="w-full py-3 rounded-lg border-2 border-white/80 hover:border-white text-white font-bold text-xs hover:bg-white hover:text-[#000E38] transition-all block text-center"
               >
                 {locale === "ar" ? "اختيار الباقة" : "Select Plan"}
-              </button>
+              </Link>
             </div>
           ))}
         </div>

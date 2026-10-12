@@ -64,4 +64,42 @@ class DashboardController extends Controller
             'data' => $stats
         ]);
     }
+
+    public function getSettings(Request $request)
+    {
+        $settings = \App\Models\Setting::all()->pluck('value', 'key');
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'whatsapp_number' => $settings['whatsapp_number'] ?? '+966500000000',
+                'inquiry_receiver_email' => $settings['inquiry_receiver_email'] ?? 'info@smarttouch.me',
+            ]
+        ]);
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'whatsapp_number' => 'nullable|string|max:50',
+            'inquiry_receiver_email' => 'nullable|email|max:150',
+        ]);
+
+        if (array_key_exists('whatsapp_number', $validated)) {
+            \App\Models\Setting::set('whatsapp_number', $validated['whatsapp_number'], 'general');
+        }
+
+        if (array_key_exists('inquiry_receiver_email', $validated)) {
+            \App\Models\Setting::set('inquiry_receiver_email', $validated['inquiry_receiver_email'], 'general');
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'General settings updated successfully',
+            'data' => [
+                'whatsapp_number' => \App\Models\Setting::get('whatsapp_number', '+966500000000'),
+                'inquiry_receiver_email' => \App\Models\Setting::get('inquiry_receiver_email', 'info@smarttouch.me'),
+            ]
+        ]);
+    }
 }

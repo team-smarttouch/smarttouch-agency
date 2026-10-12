@@ -21,7 +21,7 @@ export default function DashboardPage() {
   const { locale, setLocale, isRtl, getLocalized } = useLanguage();
 
   // Navigation tab
-  const [activeTab, setActiveTab] = useState<"overview" | "inquiries" | "posts" | "pages" | "portfolios" | "services" | "users">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "inquiries" | "posts" | "pages" | "portfolios" | "services" | "users" | "settings">("overview");
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
@@ -87,6 +87,13 @@ export default function DashboardPage() {
   const [editingPage, setEditingPage] = useState<DynamicPageItem | null>(null);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [selectedInquiry, setSelectedInquiry] = useState<InquiryItem | null>(null);
+
+  // Settings state
+  const [settingsWhatsapp, setSettingsWhatsapp] = useState("+966500000000");
+  const [settingsEmail, setSettingsEmail] = useState("info@smarttouch.me");
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [settingsMessage, setSettingsMessage] = useState("");
+  const [settingsError, setSettingsError] = useState("");
 
   // Modals state - Service
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
@@ -167,6 +174,14 @@ export default function DashboardPage() {
         
         const usersRes = await apiRequest("/dashboard/users");
         if (usersRes.success && usersRes.data) setUsersList(usersRes.data);
+
+        try {
+          const settRes = await apiRequest("/dashboard/settings");
+          if (settRes.success && settRes.data) {
+            if (settRes.data.whatsapp_number) setSettingsWhatsapp(settRes.data.whatsapp_number);
+            if (settRes.data.inquiry_receiver_email) setSettingsEmail(settRes.data.inquiry_receiver_email);
+          }
+        } catch {}
       }
 
       const postsRes = await apiRequest("/dashboard/posts");
@@ -216,11 +231,6 @@ export default function DashboardPage() {
     }
   };
 
-  const quickLogin = (email: string) => {
-    setLoginEmail(email);
-    setLoginPassword("password123");
-  };
-
   const handleUpdateInquiryStatus = async (id: number, newStatus: string) => {
     try {
       await apiRequest(`/dashboard/inquiries/${id}`, {
@@ -233,6 +243,31 @@ export default function DashboardPage() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingSettings(true);
+    setSettingsMessage("");
+    setSettingsError("");
+    try {
+      const res = await apiRequest<{ success: boolean; message: string; data: any }>("/dashboard/settings", {
+        method: "POST",
+        body: JSON.stringify({
+          whatsapp_number: settingsWhatsapp,
+          inquiry_receiver_email: settingsEmail,
+        }),
+      });
+      if (res.success) {
+        setSettingsMessage(res.message || "Settings updated successfully!");
+        setTimeout(() => setSettingsMessage(""), 5000);
+      }
+    } catch (err: any) {
+      setSettingsError(err?.message || "Failed to update settings");
+      setTimeout(() => setSettingsError(""), 5000);
+    } finally {
+      setIsSavingSettings(false);
     }
   };
 
@@ -979,36 +1014,6 @@ export default function DashboardPage() {
               {isLoggingIn ? "Authenticating..." : "Sign In to Dashboard"}
             </button>
           </form>
-
-          <div className="mt-8 pt-6 border-t border-slate-800/80 space-y-2">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block text-center">
-              Quick Demo Access
-            </span>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => quickLogin("admin@smarttouch.com")}
-                className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 text-center"
-              >
-                Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => quickLogin("content@smarttouch.com")}
-                className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 text-center"
-              >
-                Content
-              </button>
-              <button
-                type="button"
-                onClick={() => quickLogin("seo@smarttouch.com")}
-                className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 text-center"
-              >
-                SEO
-              </button>
-            </div>
-            <p className="text-[10px] text-slate-500 text-center pt-1">Default password: password123</p>
-          </div>
         </div>
       </div>
     );
@@ -1157,6 +1162,20 @@ export default function DashboardPage() {
             >
               <Users className="w-4 h-4" />
               <span>Users & RBAC</span>
+            </button>
+          )}
+
+          {user.role === "admin" && (
+            <button
+              onClick={() => setActiveTab("settings")}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === "settings"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+                  : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+              }`}
+            >
+              <Settings className="w-4 h-4" />
+              <span>General Settings</span>
             </button>
           )}
         </div>
@@ -1750,6 +1769,104 @@ export default function DashboardPage() {
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {activeTab === "settings" && user.role === "admin" && (
+          <div className="space-y-6 max-w-4xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-white">General Agency Settings</h2>
+                <p className="text-xs text-slate-400">Configure global contact routing, agency WhatsApp number, and lead inquiry notification recipients.</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSaveSettings} className="rounded-3xl bg-slate-900/60 border border-slate-800 p-8 space-y-6 shadow-xl">
+              {settingsMessage && (
+                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>{settingsMessage}</span>
+                </div>
+              )}
+
+              {settingsError && (
+                <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{settingsError}</span>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* 1. WhatsApp Number */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Agency WhatsApp Number
+                  </label>
+                  <input
+                    type="text"
+                    value={settingsWhatsapp}
+                    onChange={(e) => setSettingsWhatsapp(e.target.value)}
+                    placeholder="+966500000000"
+                    required
+                    className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm font-mono focus:ring-2 focus:ring-indigo-500/50"
+                  />
+                  <p className="text-[11px] text-slate-500">
+                    Include country code without spaces (e.g. <code>+966500000000</code>). Powers all WhatsApp CTA buttons on website.
+                  </p>
+                  {settingsWhatsapp && (
+                    <div className="pt-1">
+                      <a
+                        href={`https://wa.me/${settingsWhatsapp.replace(/[^0-9]/g, "")}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Test WhatsApp Click-to-Chat</span>
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Inquiry Receiver Email */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Inquiry Receiver Email
+                  </label>
+                  <input
+                    type="email"
+                    value={settingsEmail}
+                    onChange={(e) => setSettingsEmail(e.target.value)}
+                    placeholder="info@smarttouch.me"
+                    required
+                    className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm font-mono focus:ring-2 focus:ring-indigo-500/50"
+                  />
+                  <p className="text-[11px] text-slate-500">
+                    Email address where incoming lead inquiries from contact forms and service pages are dispatched.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800 flex items-center justify-end">
+                <button
+                  type="submit"
+                  disabled={isSavingSettings}
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition-all disabled:opacity-50"
+                >
+                  {isSavingSettings ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Saving Settings...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Save General Settings</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         )}
       </div>

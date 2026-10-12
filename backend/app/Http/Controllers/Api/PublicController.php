@@ -216,4 +216,17 @@ class PublicController extends Controller
             'data' => $portfolio
         ]);
     }
+
+    public function getSettings(Request $request)
+    {
+        $settings = \App\Models\Setting::all()->pluck('value', 'key');
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'whatsapp_number' => $settings['whatsapp_number'] ?? '+966500000000',
+                'inquiry_receiver_email' => $settings['inquiry_receiver_email'] ?? 'info@smarttouch.me',
+            ]
+        ]);
+    }
 }
