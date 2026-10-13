@@ -91,6 +91,8 @@ export default function DashboardPage() {
   // Settings state
   const [settingsWhatsapp, setSettingsWhatsapp] = useState("+966500000000");
   const [settingsEmail, setSettingsEmail] = useState("info@smarttouch.me");
+  const [featuredPortfolios, setFeaturedPortfolios] = useState<string[]>(["homefix", "dala", "weetas"]);
+  const [clientsList, setClientsList] = useState<any[]>([]);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [settingsMessage, setSettingsMessage] = useState("");
   const [settingsError, setSettingsError] = useState("");
@@ -180,7 +182,15 @@ export default function DashboardPage() {
           if (settRes.success && settRes.data) {
             if (settRes.data.whatsapp_number) setSettingsWhatsapp(settRes.data.whatsapp_number);
             if (settRes.data.inquiry_receiver_email) setSettingsEmail(settRes.data.inquiry_receiver_email);
+            if (Array.isArray(settRes.data.featured_portfolios) && settRes.data.featured_portfolios.length === 3) {
+              setFeaturedPortfolios(settRes.data.featured_portfolios);
+            }
           }
+        } catch {}
+
+        try {
+          const clRes = await apiRequest("/dashboard/clients");
+          if (clRes.success && clRes.data) setClientsList(clRes.data);
         } catch {}
       }
 
@@ -257,6 +267,7 @@ export default function DashboardPage() {
         body: JSON.stringify({
           whatsapp_number: settingsWhatsapp,
           inquiry_receiver_email: settingsEmail,
+          featured_portfolios: featuredPortfolios,
         }),
       });
       if (res.success) {
@@ -268,6 +279,20 @@ export default function DashboardPage() {
       setTimeout(() => setSettingsError(""), 5000);
     } finally {
       setIsSavingSettings(false);
+    }
+  };
+
+  const handleToggleClientStatus = async (client: any) => {
+    try {
+      await apiRequest(`/dashboard/clients/${client.id}`, {
+        method: "PUT",
+        body: JSON.stringify({ is_active: !client.is_active }),
+      });
+      setClientsList((prev) =>
+        prev.map((c) => (c.id === client.id ? { ...c, is_active: !c.is_active } : c))
+      );
+    } catch (err) {
+      console.error("Failed to toggle client status", err);
     }
   };
 
@@ -1501,6 +1526,36 @@ export default function DashboardPage() {
               )}
             </div>
 
+            {/* Homepage Featured Strip Banner */}
+            <div className="rounded-2xl bg-indigo-950/40 border border-indigo-500/30 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shrink-0 text-indigo-400">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white flex items-center gap-2">
+                    <span>Homepage Showcase ("Our Selected Work")</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                      3 Featured Slots
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-0.5">
+                    Live slots: <span className="font-semibold text-slate-200">{featuredPortfolios.join(" • ")}</span> (hover state activates deep navy spotlight)
+                  </div>
+                </div>
+              </div>
+              {user.role === "admin" && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("settings")}
+                  className="px-3.5 py-1.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-400/30 text-indigo-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Settings className="w-3.5 h-3.5" />
+                  <span>Configure Homepage 3</span>
+                </button>
+              )}
+            </div>
+
             <div className="rounded-3xl bg-slate-900/60 border border-slate-800 overflow-hidden shadow-xl">
               <table className="w-full text-left rtl:text-right text-xs">
                 <thead className="bg-slate-950/80 text-slate-400 uppercase font-semibold border-b border-slate-800">
@@ -1513,34 +1568,44 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
-                  {portfolios.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-800/40">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          {p.hero_image ? (
-                            <img src={p.hero_image} alt={p.title.en} className="w-12 h-9 rounded-lg object-cover border border-slate-700 shrink-0" />
-                          ) : (
-                            <div className="w-12 h-9 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
-                              <Briefcase className="w-4 h-4 text-slate-500" />
+                  {portfolios.map((p) => {
+                    const pSlug = typeof p.slug === "object" ? p.slug?.en : p.slug;
+                    const isFeatured = featuredPortfolios.includes(pSlug);
+                    return (
+                      <tr key={p.id} className="hover:bg-slate-800/40">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            {p.hero_image ? (
+                              <img src={p.hero_image} alt={p.title.en} className="w-12 h-9 rounded-lg object-cover border border-slate-700 shrink-0" />
+                            ) : (
+                              <div className="w-12 h-9 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
+                                <Briefcase className="w-4 h-4 text-slate-500" />
+                              </div>
+                            )}
+                            <div>
+                              <div className="font-bold text-white flex items-center gap-2">
+                                <span>{p.title.en}</span>
+                                {isFeatured && (
+                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                    ★ Featured
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-slate-400 text-[11px]">{p.title.ar}</div>
                             </div>
-                          )}
-                          <div>
-                            <div className="font-bold text-white">{p.title.en}</div>
-                            <div className="text-slate-400 text-[11px]">{p.title.ar}</div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-mono text-indigo-400 font-semibold uppercase">{p.category}</td>
-                      <td className="px-6 py-4 text-slate-400 font-mono text-[11px]">
-                        /portfolio/{p.slug.en}.html
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          p.is_published !== false ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30" : "bg-slate-700 text-slate-400"
-                        }`}>
-                          {p.is_published !== false ? "Published" : "Draft"}
-                        </span>
-                      </td>
+                        </td>
+                        <td className="px-6 py-4 font-mono text-indigo-400 font-semibold uppercase">{p.category}</td>
+                        <td className="px-6 py-4 text-slate-400 font-mono text-[11px]">
+                          /portfolio/{p.slug.en}.html
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            p.is_published !== false ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30" : "bg-slate-700 text-slate-400"
+                          }`}>
+                            {p.is_published !== false ? "Published" : "Draft"}
+                          </span>
+                        </td>
                       <td className="px-6 py-4 text-end space-x-2 rtl:space-x-reverse">
                         <a
                           href={`/en/portfolio/${p.slug.en}.html`}
@@ -1571,7 +1636,8 @@ export default function DashboardPage() {
                         )}
                       </td>
                     </tr>
-                  ))}
+                  );
+                })}
                   {portfolios.length === 0 && (
                     <tr>
                       <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
@@ -1845,13 +1911,159 @@ export default function DashboardPage() {
                     Email address where incoming lead inquiries from contact forms and service pages are dispatched.
                   </p>
                 </div>
+
+                {/* 3. Homepage Featured Work (Our Selected Work) */}
+                <div className="md:col-span-2 pt-6 border-t border-slate-800 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                        <Briefcase className="w-4 h-4 text-indigo-400" />
+                        <span>Homepage Featured Work ("Our Selected Work")</span>
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Select which 3 portfolio items are spotlighted on the homepage. Default state is light; hover state displays the deep navy blue gradient.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Slot 1: Left */}
+                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-indigo-400">
+                          Slot 1 (Left Card)
+                        </label>
+                        <span className="text-[10px] text-slate-500 font-mono">Position 1</span>
+                      </div>
+                      <select
+                        value={featuredPortfolios[0] || ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setFeaturedPortfolios([val, featuredPortfolios[1] || "", featuredPortfolios[2] || ""]);
+                        }}
+                        className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-semibold focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
+                      >
+                        {portfolios.map((p) => {
+                          const s = typeof p.slug === "object" ? p.slug?.en : p.slug;
+                          const t = typeof p.title === "object" ? p.title?.en : p.title;
+                          return (
+                            <option key={p.id} value={s}>
+                              {t} ({s})
+                            </option>
+                          );
+                        })}
+                      </select>
+                      {(() => {
+                        const item = portfolios.find(p => (typeof p.slug === "object" ? p.slug?.en : p.slug) === featuredPortfolios[0]);
+                        if (!item) return null;
+                        return (
+                          <div className="flex items-center gap-2.5 pt-2 text-[11px] text-slate-300">
+                            {item.thumbnail_image || item.hero_image ? (
+                              <img src={item.thumbnail_image || item.hero_image} alt="" className="w-10 h-7 rounded object-cover border border-slate-700 shrink-0" />
+                            ) : null}
+                            <div className="truncate">
+                              <span className="font-semibold text-white">{typeof item.title === "object" ? item.title.en : item.title}</span>
+                              <div className="text-[10px] text-slate-500">{item.category}</div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Slot 2: Center */}
+                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-indigo-400">
+                          Slot 2 (Center Card)
+                        </label>
+                        <span className="text-[10px] text-slate-500 font-mono">Position 2</span>
+                      </div>
+                      <select
+                        value={featuredPortfolios[1] || ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setFeaturedPortfolios([featuredPortfolios[0] || "", val, featuredPortfolios[2] || ""]);
+                        }}
+                        className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-semibold focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
+                      >
+                        {portfolios.map((p) => {
+                          const s = typeof p.slug === "object" ? p.slug?.en : p.slug;
+                          const t = typeof p.title === "object" ? p.title?.en : p.title;
+                          return (
+                            <option key={p.id} value={s}>
+                              {t} ({s})
+                            </option>
+                          );
+                        })}
+                      </select>
+                      {(() => {
+                        const item = portfolios.find(p => (typeof p.slug === "object" ? p.slug?.en : p.slug) === featuredPortfolios[1]);
+                        if (!item) return null;
+                        return (
+                          <div className="flex items-center gap-2.5 pt-2 text-[11px] text-slate-300">
+                            {item.thumbnail_image || item.hero_image ? (
+                              <img src={item.thumbnail_image || item.hero_image} alt="" className="w-10 h-7 rounded object-cover border border-slate-700 shrink-0" />
+                            ) : null}
+                            <div className="truncate">
+                              <span className="font-semibold text-white">{typeof item.title === "object" ? item.title.en : item.title}</span>
+                              <div className="text-[10px] text-slate-500">{item.category}</div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Slot 3: Right */}
+                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-indigo-400">
+                          Slot 3 (Right Card)
+                        </label>
+                        <span className="text-[10px] text-slate-500 font-mono">Position 3</span>
+                      </div>
+                      <select
+                        value={featuredPortfolios[2] || ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setFeaturedPortfolios([featuredPortfolios[0] || "", featuredPortfolios[1] || "", val]);
+                        }}
+                        className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-semibold focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
+                      >
+                        {portfolios.map((p) => {
+                          const s = typeof p.slug === "object" ? p.slug?.en : p.slug;
+                          const t = typeof p.title === "object" ? p.title?.en : p.title;
+                          return (
+                            <option key={p.id} value={s}>
+                              {t} ({s})
+                            </option>
+                          );
+                        })}
+                      </select>
+                      {(() => {
+                        const item = portfolios.find(p => (typeof p.slug === "object" ? p.slug?.en : p.slug) === featuredPortfolios[2]);
+                        if (!item) return null;
+                        return (
+                          <div className="flex items-center gap-2.5 pt-2 text-[11px] text-slate-300">
+                            {item.thumbnail_image || item.hero_image ? (
+                              <img src={item.thumbnail_image || item.hero_image} alt="" className="w-10 h-7 rounded object-cover border border-slate-700 shrink-0" />
+                            ) : null}
+                            <div className="truncate">
+                              <span className="font-semibold text-white">{typeof item.title === "object" ? item.title.en : item.title}</span>
+                              <div className="text-[10px] text-slate-500">{item.category}</div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="pt-4 border-t border-slate-800 flex items-center justify-end">
                 <button
                   type="submit"
                   disabled={isSavingSettings}
-                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition-all disabled:opacity-50"
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {isSavingSettings ? (
                     <>
@@ -1867,6 +2079,64 @@ export default function DashboardPage() {
                 </button>
               </div>
             </form>
+
+            {/* 4. Client Brands Section (Connected to Database) */}
+            <div className="rounded-3xl bg-slate-900/60 border border-slate-800 p-8 space-y-6 shadow-xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <Users className="w-4 h-4 text-indigo-400" />
+                    <span>Top Client Brands ({clientsList.length} Connected in Database)</span>
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Manage client brand logos displayed dynamically across Homepage, Services, and About Us pages.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {clientsList.map((client) => {
+                  const clientName = typeof client.name === "object" ? client.name.en : client.name;
+                  return (
+                    <div
+                      key={client.id}
+                      className={`p-3 rounded-2xl border transition-all flex flex-col items-center justify-between text-center gap-2 ${
+                        client.is_active
+                          ? "bg-slate-950/70 border-slate-800"
+                          : "bg-slate-950/30 border-slate-800/40 opacity-50"
+                      }`}
+                    >
+                      <div className="w-full h-12 flex items-center justify-center bg-white/5 rounded-xl p-2">
+                        <img
+                          src={client.logo}
+                          alt={clientName}
+                          className="max-h-8 max-w-full object-contain filter brightness-90 contrast-125"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = "none";
+                          }}
+                        />
+                      </div>
+                      <div className="w-full">
+                        <div className="text-[11px] font-bold text-white truncate" title={clientName}>
+                          {clientName}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleClientStatus(client)}
+                          className={`mt-1.5 w-full py-1 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
+                            client.is_active
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+                              : "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700"
+                          }`}
+                        >
+                          {client.is_active ? "Active" : "Disabled"}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         )}
       </div>

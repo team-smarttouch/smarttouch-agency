@@ -74,6 +74,7 @@ class DashboardController extends Controller
             'data' => [
                 'whatsapp_number' => $settings['whatsapp_number'] ?? '+966500000000',
                 'inquiry_receiver_email' => $settings['inquiry_receiver_email'] ?? 'info@smarttouch.me',
+                'featured_portfolios' => $settings['featured_portfolios'] ?? ['homefix', 'dala', 'weetas'],
             ]
         ]);
     }
@@ -83,6 +84,7 @@ class DashboardController extends Controller
         $validated = $request->validate([
             'whatsapp_number' => 'nullable|string|max:50',
             'inquiry_receiver_email' => 'nullable|email|max:150',
+            'featured_portfolios' => 'nullable|array',
         ]);
 
         if (array_key_exists('whatsapp_number', $validated)) {
@@ -93,13 +95,81 @@ class DashboardController extends Controller
             \App\Models\Setting::set('inquiry_receiver_email', $validated['inquiry_receiver_email'], 'general');
         }
 
+        if (array_key_exists('featured_portfolios', $validated)) {
+            \App\Models\Setting::set('featured_portfolios', $validated['featured_portfolios'], 'general');
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'General settings updated successfully',
             'data' => [
                 'whatsapp_number' => \App\Models\Setting::get('whatsapp_number', '+966500000000'),
                 'inquiry_receiver_email' => \App\Models\Setting::get('inquiry_receiver_email', 'info@smarttouch.me'),
+                'featured_portfolios' => \App\Models\Setting::get('featured_portfolios', ['homefix', 'dala', 'weetas']),
             ]
+        ]);
+    }
+
+    // Client Brands Management
+    public function getClients(Request $request)
+    {
+        $clients = \App\Models\Client::orderBy('sort_order', 'asc')->get();
+        return response()->json([
+            'success' => true,
+            'data' => $clients
+        ]);
+    }
+
+    public function createClient(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required',
+            'logo' => 'required|string',
+            'link' => 'nullable|string',
+            'alt' => 'nullable|string',
+            'sort_order' => 'nullable|integer',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        $client = \App\Models\Client::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Client created successfully',
+            'data' => $client
+        ], 201);
+    }
+
+    public function updateClient(Request $request, $id)
+    {
+        $client = \App\Models\Client::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'nullable',
+            'logo' => 'nullable|string',
+            'link' => 'nullable|string',
+            'alt' => 'nullable|string',
+            'sort_order' => 'nullable|integer',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        $client->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Client updated successfully',
+            'data' => $client
+        ]);
+    }
+
+    public function deleteClient($id)
+    {
+        $client = \App\Models\Client::findOrFail($id);
+        $client->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Client deleted successfully'
         ]);
     }
 }

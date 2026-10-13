@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAgencySettings } from "@/context/AgencySettingsContext";
 import { siteUrls } from "@/lib/urls";
 import { apiRequest, PortfolioItem } from "@/lib/api";
 import { ArrowUpRight } from "lucide-react";
@@ -46,10 +47,11 @@ const initialProjects: PortfolioItem[] = [
 
 export function PortfolioShowcase() {
   const { locale, isRtl } = useLanguage();
+  const { featuredPortfolios } = useAgencySettings();
   const [projects, setProjects] = useState<PortfolioItem[]>(initialProjects);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch live portfolios from database via API
+  // Fetch live portfolios from database via API, respecting admin featured slots
   useEffect(() => {
     let isMounted = true;
     async function loadPortfolios() {
@@ -58,25 +60,33 @@ export function PortfolioShowcase() {
         const res = await apiRequest("/portfolios");
         const items = Array.isArray(res) ? res : res.data;
         if (isMounted && Array.isArray(items) && items.length > 0) {
-          // Find the 3 featured showcase projects: Homefix (Left), Dala (Center), Weetas (Right)
-          const homefix = items.find((p: any) => {
-            const s = typeof p.slug === "object" ? p.slug?.en : p.slug;
-            return s === "homefix";
-          });
-          const dala = items.find((p: any) => {
-            const s = typeof p.slug === "object" ? p.slug?.en : p.slug;
-            return s === "dala";
-          });
-          const weetas = items.find((p: any) => {
-            const s = typeof p.slug === "object" ? p.slug?.en : p.slug;
-            return s === "weetas" || s === "weetas-real-estate";
+          const targetSlugs =
+            featuredPortfolios && featuredPortfolios.length === 3
+              ? featuredPortfolios
+              : ["homefix", "dala", "weetas"];
+
+          const matched: PortfolioItem[] = [];
+          targetSlugs.forEach((targetSlug) => {
+            const found = items.find((p: any) => {
+              const sEn = typeof p.slug === "object" ? p.slug?.en : p.slug;
+              const sAr = typeof p.slug === "object" ? p.slug?.ar : p.slug;
+              return sEn === targetSlug || sAr === targetSlug || String(p.id) === targetSlug;
+            });
+            if (found) matched.push(found);
           });
 
-          if (homefix && dala && weetas) {
-            setProjects([homefix, dala, weetas]);
+          if (matched.length === 3) {
+            setProjects(matched);
           } else {
-            // Fallback to top 3 active projects
-            setProjects(items.slice(0, 3));
+            // Fill missing slots with available items
+            const filled = [...matched];
+            for (const item of items) {
+              if (filled.length >= 3) break;
+              if (!filled.some((f) => f.id === item.id)) {
+                filled.push(item);
+              }
+            }
+            setProjects(filled.slice(0, 3));
           }
         }
       } catch (err) {
@@ -90,7 +100,7 @@ export function PortfolioShowcase() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [featuredPortfolios]);
 
   const cardLeft = projects[0] || initialProjects[0];
   const cardCenter = projects[1] || initialProjects[1];
@@ -120,7 +130,7 @@ export function PortfolioShowcase() {
   return (
     <section className="py-20 sm:py-24 bg-white border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header matching template 100% */}
+        {/* Section Header */}
         <div className="mb-12">
           <span className="text-xs uppercase tracking-widest text-slate-400 font-bold block mb-1">
             {locale === "ar" ? "معرض الأعمال" : "PORTFOLIO"}
@@ -130,17 +140,16 @@ export function PortfolioShowcase() {
           </h2>
         </div>
 
-        {/* 3 Project Cards matching master homepage design 100% */}
+        {/* 3 Project Cards: Default light state, dark blue ONLY on hover state */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-          {/* 1. Left Project Card (Light Blue Container with Laptop Mockup) */}
+          {/* 1. Left Project Card */}
           <Link
             href={siteUrls.portfolioDetail(getSlug(cardLeft) || "", locale)}
-            className="group rounded-2xl bg-[#EBF1FA] border border-blue-100/60 p-6 sm:p-8 flex flex-col justify-between hover:shadow-xl transition-all duration-500 hover:-translate-y-1.5"
+            className="group rounded-2xl bg-[#EBF1FA] border border-blue-100/60 p-6 sm:p-8 flex flex-col justify-between transition-all duration-500 hover:bg-gradient-to-b hover:from-[#001D6E] hover:via-[#001758] hover:to-[#000F3E] hover:border-[#001D6E] hover:shadow-2xl hover:shadow-blue-900/35 hover:-translate-y-2 hover:scale-[1.02]"
           >
-            {/* Laptop Mockup with Client Website Artwork */}
+            {/* Laptop Mockup with Website Artwork */}
             <div className="relative w-full aspect-[16/11] flex flex-col items-center justify-center my-auto pt-2 pb-4">
-              {/* Laptop Screen Frame */}
-              <div className="relative w-[88%] aspect-[16/10] bg-slate-900 rounded-t-xl p-1.5 shadow-2xl border border-slate-700/80 flex flex-col">
+              <div className="relative w-[88%] aspect-[16/10] bg-slate-900 rounded-t-xl p-1.5 shadow-2xl border border-slate-700/80 group-hover:border-blue-400/40 transition-colors flex flex-col">
                 <div className="w-1.5 h-1.5 rounded-full bg-slate-500 mx-auto mb-1 shrink-0" />
                 <div className="relative w-full h-full bg-white rounded-sm overflow-hidden">
                   <img
@@ -151,32 +160,37 @@ export function PortfolioShowcase() {
                   />
                 </div>
               </div>
-              {/* Laptop Keyboard Base */}
               <div className="w-[96%] h-2.5 sm:h-3 rounded-b-lg bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300 shadow-md border-t border-slate-400/80 relative">
                 <div className="w-10 h-1 bg-slate-400 rounded-b mx-auto" />
               </div>
             </div>
 
-            {/* Card Information */}
-            <div className="pt-4 border-t border-blue-200/40">
-              <h3 className="text-xl sm:text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">
-                {getTitle(cardLeft)}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
-                {getCategory(cardLeft)}
-              </p>
+            {/* Card Information & Action Button */}
+            <div className="pt-4 border-t border-blue-200/50 group-hover:border-blue-700/60 transition-colors flex items-center justify-between">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 group-hover:text-white transition-colors">
+                  {getTitle(cardLeft)}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 group-hover:text-blue-200 font-medium mt-1 transition-colors">
+                  {getCategory(cardLeft)}
+                </p>
+              </div>
+
+              <div className="w-11 h-11 rounded-full bg-white text-slate-700 group-hover:text-[#001D6E] flex items-center justify-center shadow-md group-hover:shadow-xl group-hover:scale-110 active:scale-95 transition-all shrink-0">
+                <ArrowUpRight className={`w-5 h-5 ${isRtl ? "rotate-270" : ""}`} />
+              </div>
             </div>
           </Link>
 
-          {/* 2. Middle Featured Project Card (Deep Navy Blue Container with Multi-Device Artwork & Arrow Button) */}
+          {/* 2. Middle Project Card */}
           <Link
             href={siteUrls.portfolioDetail(getSlug(cardCenter) || "", locale)}
-            className="group rounded-2xl bg-gradient-to-b from-[#001D6E] via-[#001758] to-[#000F3E] text-white p-6 sm:p-8 flex flex-col justify-between shadow-2xl shadow-blue-900/30 hover:scale-[1.02] transition-all duration-500 hover:shadow-blue-900/50"
+            className="group rounded-2xl bg-[#EBF1FA] border border-blue-100/60 p-6 sm:p-8 flex flex-col justify-between transition-all duration-500 hover:bg-gradient-to-b hover:from-[#001D6E] hover:via-[#001758] hover:to-[#000F3E] hover:border-[#001D6E] hover:shadow-2xl hover:shadow-blue-900/35 hover:-translate-y-2 hover:scale-[1.02]"
           >
-            {/* Multi-Device Composite Artwork matching template */}
+            {/* Multi-Device Composite Artwork */}
             <div className="relative w-full aspect-[16/11] flex items-center justify-center my-auto pt-2 pb-4 overflow-hidden">
               {/* Desktop/Laptop Screen */}
-              <div className="relative w-[78%] aspect-[16/10] bg-slate-950 rounded-t-xl p-1.5 shadow-2xl border border-blue-400/30 flex flex-col -translate-x-3">
+              <div className="relative w-[78%] aspect-[16/10] bg-slate-950 rounded-t-xl p-1.5 shadow-2xl border border-slate-700/60 group-hover:border-blue-400/40 transition-colors flex flex-col -translate-x-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-slate-600 mx-auto mb-1 shrink-0" />
                 <div className="relative w-full h-full bg-slate-900 rounded-sm overflow-hidden">
                   <img
@@ -191,7 +205,7 @@ export function PortfolioShowcase() {
               </div>
 
               {/* Overlaid Smartphone Mockup */}
-              <div className="absolute right-2 sm:right-4 bottom-2 w-[28%] aspect-[9/18] bg-slate-950 rounded-2xl p-1 shadow-2xl border border-cyan-400/40 z-10 flex flex-col">
+              <div className="absolute right-2 sm:right-4 bottom-2 w-[28%] aspect-[9/18] bg-slate-950 rounded-2xl p-1 shadow-2xl border border-slate-700/60 group-hover:border-cyan-400/40 transition-colors z-10 flex flex-col">
                 <div className="w-3 h-0.5 bg-slate-700 rounded-full mx-auto my-0.5 shrink-0" />
                 <div className="relative w-full h-full bg-slate-900 rounded-xl overflow-hidden">
                   <img
@@ -204,33 +218,31 @@ export function PortfolioShowcase() {
               </div>
             </div>
 
-            {/* Card Information with Circular Arrow Button */}
-            <div className="pt-4 border-t border-blue-800/60 flex items-center justify-between">
+            {/* Card Information & Action Button */}
+            <div className="pt-4 border-t border-blue-200/50 group-hover:border-blue-700/60 transition-colors flex items-center justify-between">
               <div>
-                <h3 className="text-xl sm:text-2xl font-black text-white group-hover:text-cyan-300 transition-colors">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 group-hover:text-white transition-colors">
                   {getTitle(cardCenter)}
                 </h3>
-                <p className="text-xs sm:text-sm text-blue-200 font-medium mt-1">
+                <p className="text-xs sm:text-sm text-slate-500 group-hover:text-blue-200 font-medium mt-1 transition-colors">
                   {getCategory(cardCenter)}
                 </p>
               </div>
 
-              {/* White Circular Action Button matching template */}
-              <div className="w-11 h-11 rounded-full bg-white text-[#001D6E] flex items-center justify-center shadow-lg group-hover:scale-110 active:scale-95 transition-all shrink-0">
+              <div className="w-11 h-11 rounded-full bg-white text-slate-700 group-hover:text-[#001D6E] flex items-center justify-center shadow-md group-hover:shadow-xl group-hover:scale-110 active:scale-95 transition-all shrink-0">
                 <ArrowUpRight className={`w-5 h-5 ${isRtl ? "rotate-270" : ""}`} />
               </div>
             </div>
           </Link>
 
-          {/* 3. Right Project Card (Light Blue Container with Laptop Mockup) */}
+          {/* 3. Right Project Card */}
           <Link
             href={siteUrls.portfolioDetail(getSlug(cardRight) || "", locale)}
-            className="group rounded-2xl bg-[#EBF1FA] border border-blue-100/60 p-6 sm:p-8 flex flex-col justify-between hover:shadow-xl transition-all duration-500 hover:-translate-y-1.5"
+            className="group rounded-2xl bg-[#EBF1FA] border border-blue-100/60 p-6 sm:p-8 flex flex-col justify-between transition-all duration-500 hover:bg-gradient-to-b hover:from-[#001D6E] hover:via-[#001758] hover:to-[#000F3E] hover:border-[#001D6E] hover:shadow-2xl hover:shadow-blue-900/35 hover:-translate-y-2 hover:scale-[1.02]"
           >
-            {/* Laptop Mockup with Client Website Artwork */}
+            {/* Laptop Mockup with Website Artwork */}
             <div className="relative w-full aspect-[16/11] flex flex-col items-center justify-center my-auto pt-2 pb-4">
-              {/* Laptop Screen Frame */}
-              <div className="relative w-[88%] aspect-[16/10] bg-slate-900 rounded-t-xl p-1.5 shadow-2xl border border-slate-700/80 flex flex-col">
+              <div className="relative w-[88%] aspect-[16/10] bg-slate-900 rounded-t-xl p-1.5 shadow-2xl border border-slate-700/80 group-hover:border-blue-400/40 transition-colors flex flex-col">
                 <div className="w-1.5 h-1.5 rounded-full bg-slate-500 mx-auto mb-1 shrink-0" />
                 <div className="relative w-full h-full bg-white rounded-sm overflow-hidden">
                   <img
@@ -241,20 +253,25 @@ export function PortfolioShowcase() {
                   />
                 </div>
               </div>
-              {/* Laptop Keyboard Base */}
               <div className="w-[96%] h-2.5 sm:h-3 rounded-b-lg bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300 shadow-md border-t border-slate-400/80 relative">
                 <div className="w-10 h-1 bg-slate-400 rounded-b mx-auto" />
               </div>
             </div>
 
-            {/* Card Information */}
-            <div className="pt-4 border-t border-blue-200/40">
-              <h3 className="text-xl sm:text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">
-                {getTitle(cardRight)}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
-                {getCategory(cardRight)}
-              </p>
+            {/* Card Information & Action Button */}
+            <div className="pt-4 border-t border-blue-200/50 group-hover:border-blue-700/60 transition-colors flex items-center justify-between">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 group-hover:text-white transition-colors">
+                  {getTitle(cardRight)}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 group-hover:text-blue-200 font-medium mt-1 transition-colors">
+                  {getCategory(cardRight)}
+                </p>
+              </div>
+
+              <div className="w-11 h-11 rounded-full bg-white text-slate-700 group-hover:text-[#001D6E] flex items-center justify-center shadow-md group-hover:shadow-xl group-hover:scale-110 active:scale-95 transition-all shrink-0">
+                <ArrowUpRight className={`w-5 h-5 ${isRtl ? "rotate-270" : ""}`} />
+              </div>
             </div>
           </Link>
         </div>

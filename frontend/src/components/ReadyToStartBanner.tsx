@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAgencySettings } from "@/context/AgencySettingsContext";
 
 interface ReadyToStartBannerProps {
   className?: string;
@@ -18,32 +19,13 @@ export function ReadyToStartBanner({
   bgVariant = "white",
 }: ReadyToStartBannerProps) {
   const { locale, isRtl } = useLanguage();
-  const [whatsappNumber, setWhatsappNumber] = useState("+966500000000");
+  const { getWhatsAppUrl } = useAgencySettings();
 
-  useEffect(() => {
-    // Optionally fetch dynamic WhatsApp number from settings
-    fetch("/api/settings")
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw new Error("Failed to load settings");
-      })
-      .then((data) => {
-        if (data?.data?.whatsapp_number) {
-          setWhatsappNumber(data.data.whatsapp_number);
-        }
-      })
-      .catch(() => {
-        // Fallback default is already set
-      });
-  }, []);
-
-  const cleanPhone = whatsappNumber.replace(/[^0-9]/g, "");
-  const defaultPhone = cleanPhone || "966500000000";
   const greeting =
     locale === "ar"
       ? "مرحباً سمارت تاتش، أود الاستفسار عن بدء مشروع جديد معكم."
       : "Hello Smart Touch, I would like to inquire about starting a project with you.";
-  const whatsappUrl = `https://wa.me/${defaultPhone}?text=${encodeURIComponent(greeting)}`;
+  const whatsappUrl = getWhatsAppUrl(greeting);
 
   const title =
     locale === "ar"

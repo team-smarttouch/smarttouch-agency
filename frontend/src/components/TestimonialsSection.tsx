@@ -5,6 +5,76 @@ import { useLanguage } from "@/context/LanguageContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TESTIMONIALS_DATA } from "@/data/testimonialsData";
 
+function ReviewCard({
+  r,
+  locale,
+}: {
+  r: (typeof TESTIMONIALS_DATA)[0];
+  locale: "en" | "ar";
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const name = locale === "ar" ? r.name.ar : r.name.en;
+  const role = locale === "ar" ? r.role.ar : r.role.en;
+  const company = locale === "ar" ? r.company.ar : r.company.en;
+  const quote = locale === "ar" ? r.quote.ar : r.quote.en;
+
+  // Threshold for excerpt
+  const isLong = quote.length > 170;
+  const displayText = isLong && !isExpanded ? `${quote.slice(0, 160)}...` : quote;
+
+  return (
+    <div
+      className="p-6 sm:p-7 rounded-2xl bg-[#09122F]/90 border border-blue-900/50 flex flex-col justify-between hover:border-blue-500/50 transition-all duration-300 shadow-xl group min-h-[300px]"
+      dir={locale === "ar" ? "rtl" : "ltr"}
+    >
+      <div className="mb-6 flex-grow">
+        <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed font-light">
+          &ldquo;{displayText}&rdquo;
+        </p>
+        {isLong && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
+            className="mt-2.5 inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer focus:outline-none transition-colors"
+          >
+            <span>
+              {isExpanded
+                ? locale === "ar"
+                  ? "إظهار أقل"
+                  : "Read less"
+                : locale === "ar"
+                ? "اقرأ المزيد"
+                : "Read more"}
+            </span>
+            <span className="text-[9px]">{isExpanded ? "▲" : "▼"}</span>
+          </button>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3.5 pt-5 border-t border-blue-900/40">
+        <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-blue-500/30">
+          <img
+            src={r.avatar}
+            alt={name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="overflow-hidden">
+          <h4 className="text-xs font-bold text-white tracking-wide uppercase truncate">
+            {name}
+          </h4>
+          <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
+            {role}{role && company ? `, ` : ""}{company}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function TestimonialsSection() {
   const { locale, isRtl } = useLanguage();
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -45,89 +115,23 @@ export function TestimonialsSection() {
         {/* 8-Review Slider: 4 cards visible per slide */}
         <div className="overflow-hidden">
           <div
-            className="flex transition-transform duration-700 ease-in-out"
+            className="flex transition-transform duration-700 ease-in-out items-start"
             style={{
               transform: `translateX(${isRtl ? currentPage * 100 : -currentPage * 100}%)`,
             }}
           >
             {/* Slide 1: Reviews 1 - 4 */}
             <div className="w-full shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-1">
-              {TESTIMONIALS_DATA.slice(0, 4).map((r) => {
-                const name = locale === "ar" ? r.name.ar : r.name.en;
-                const role = locale === "ar" ? r.role.ar : r.role.en;
-                const company = locale === "ar" ? r.company.ar : r.company.en;
-                const quote = locale === "ar" ? r.quote.ar : r.quote.en;
-
-                return (
-                  <div
-                    key={r.id}
-                    className="p-6 sm:p-7 rounded-2xl bg-[#09122F]/90 border border-blue-900/50 flex flex-col justify-between hover:border-blue-500/50 transition-all duration-300 shadow-xl group min-h-[300px]"
-                    dir={locale === "ar" ? "rtl" : "ltr"}
-                  >
-                    <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed font-light mb-6 flex-grow">
-                      &ldquo;{quote}&rdquo;
-                    </p>
-
-                    <div className="flex items-center gap-3.5 pt-5 border-t border-blue-900/40">
-                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-blue-500/30">
-                        <img
-                          src={r.avatar}
-                          alt={name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="overflow-hidden">
-                        <h4 className="text-xs font-bold text-white tracking-wide uppercase truncate">
-                          {name}
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
-                          {role}{role && company ? `, ` : ""}{company}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {TESTIMONIALS_DATA.slice(0, 4).map((r) => (
+                <ReviewCard key={r.id} r={r} locale={locale} />
+              ))}
             </div>
 
             {/* Slide 2: Reviews 5 - 8 */}
             <div className="w-full shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-1">
-              {TESTIMONIALS_DATA.slice(4, 8).map((r) => {
-                const name = locale === "ar" ? r.name.ar : r.name.en;
-                const role = locale === "ar" ? r.role.ar : r.role.en;
-                const company = locale === "ar" ? r.company.ar : r.company.en;
-                const quote = locale === "ar" ? r.quote.ar : r.quote.en;
-
-                return (
-                  <div
-                    key={r.id}
-                    className="p-6 sm:p-7 rounded-2xl bg-[#09122F]/90 border border-blue-900/50 flex flex-col justify-between hover:border-blue-500/50 transition-all duration-300 shadow-xl group min-h-[300px]"
-                    dir={locale === "ar" ? "rtl" : "ltr"}
-                  >
-                    <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed font-light mb-6 flex-grow">
-                      &ldquo;{quote}&rdquo;
-                    </p>
-
-                    <div className="flex items-center gap-3.5 pt-5 border-t border-blue-900/40">
-                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-blue-500/30">
-                        <img
-                          src={r.avatar}
-                          alt={name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="overflow-hidden">
-                        <h4 className="text-xs font-bold text-white tracking-wide uppercase truncate">
-                          {name}
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
-                          {role}{role && company ? `, ` : ""}{company}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {TESTIMONIALS_DATA.slice(4, 8).map((r) => (
+                <ReviewCard key={r.id} r={r} locale={locale} />
+              ))}
             </div>
           </div>
         </div>

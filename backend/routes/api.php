@@ -28,6 +28,7 @@ Route::get('/portfolios/{slug}', [PublicController::class, 'getPortfolio']);
 Route::get('/categories', [PublicController::class, 'getCategories']);
 Route::post('/inquiries', [PublicController::class, 'submitInquiry']);
 Route::get('/settings', [PublicController::class, 'getSettings']);
+Route::get('/clients', [PublicController::class, 'getClients']);
 
 // Auth
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -55,6 +56,12 @@ Route::middleware('auth:sanctum')->group(function () {
         // General Agency Settings
         Route::get('/dashboard/settings', [DashboardController::class, 'getSettings']);
         Route::post('/dashboard/settings', [DashboardController::class, 'updateSettings']);
+
+        // Client Brands Management
+        Route::get('/dashboard/clients', [DashboardController::class, 'getClients']);
+        Route::post('/dashboard/clients', [DashboardController::class, 'createClient']);
+        Route::put('/dashboard/clients/{id}', [DashboardController::class, 'updateClient']);
+        Route::delete('/dashboard/clients/{id}', [DashboardController::class, 'deleteClient']);
 
         // User management (Admin only)
         Route::get('/dashboard/users', [UserController::class, 'index']);

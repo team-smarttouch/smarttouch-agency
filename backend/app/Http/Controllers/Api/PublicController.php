@@ -226,7 +226,20 @@ class PublicController extends Controller
             'data' => [
                 'whatsapp_number' => $settings['whatsapp_number'] ?? '+966500000000',
                 'inquiry_receiver_email' => $settings['inquiry_receiver_email'] ?? 'info@smarttouch.me',
+                'featured_portfolios' => $settings['featured_portfolios'] ?? ['homefix', 'dala', 'weetas'],
             ]
+        ]);
+    }
+
+    public function getClients(Request $request)
+    {
+        $clients = \App\Models\Client::where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $clients
         ]);
     }
 }

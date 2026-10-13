@@ -1,11 +1,88 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
 import { ChevronRight, Star, Quote, ArrowRight, ArrowLeft } from "lucide-react";
 import { TESTIMONIALS_DATA } from "@/data/testimonialsData";
+
+function TestimonialGridCard({
+  t,
+  locale,
+}: {
+  t: (typeof TESTIMONIALS_DATA)[0];
+  locale: "en" | "ar";
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const name = locale === "ar" ? t.name.ar : t.name.en;
+  const role = locale === "ar" ? t.role.ar : t.role.en;
+  const company = locale === "ar" ? t.company.ar : t.company.en;
+  const quote = locale === "ar" ? t.quote.ar : t.quote.en;
+
+  const isLong = quote.length > 200;
+  const displayText = isLong && !isExpanded ? `${quote.slice(0, 190)}...` : quote;
+
+  return (
+    <div
+      className="p-8 sm:p-10 rounded-3xl bg-[#09122F]/90 border border-blue-900/50 flex flex-col justify-between hover:border-cyan-500/40 transition-all duration-300 shadow-2xl relative group"
+      dir={locale === "ar" ? "rtl" : "ltr"}
+    >
+      {/* Subtle top quotation glyph */}
+      <Quote className="w-8 h-8 text-blue-500/20 absolute top-6 right-6 pointer-events-none group-hover:text-cyan-400/20 transition-colors" />
+
+      <div>
+        {/* Star Rating */}
+        <div className="flex items-center gap-1 mb-5">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+          ))}
+        </div>
+
+        {/* Quote Body */}
+        <p className="text-sm sm:text-[15px] text-slate-200 leading-relaxed font-light mb-3">
+          &ldquo;{displayText}&rdquo;
+        </p>
+
+        {isLong && (
+          <button
+            type="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="mb-6 inline-flex items-center gap-1 text-xs font-bold text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer focus:outline-none transition-colors"
+          >
+            <span>
+              {isExpanded
+                ? locale === "ar"
+                  ? "إظهار أقل"
+                  : "Read less"
+                : locale === "ar"
+                ? "اقرأ المزيد"
+                : "Read more"}
+            </span>
+            <span className="text-[10px]">{isExpanded ? "▲" : "▼"}</span>
+          </button>
+        )}
+      </div>
+
+      {/* Author Block */}
+      <div className="flex items-center gap-4 pt-6 border-t border-blue-900/40 mt-4">
+        <div className="w-14 h-14 rounded-full bg-slate-800 shrink-0 overflow-hidden ring-2 ring-cyan-500/30">
+          <img src={t.avatar} alt={name} className="w-full h-full object-cover" />
+        </div>
+        <div>
+          <h3 className="text-sm sm:text-base font-bold text-white tracking-wide uppercase">
+            {name}
+          </h3>
+          <p className="text-xs text-slate-400 mt-0.5">
+            {role}
+            {role && company ? `, ` : ""}
+            {company}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function TestimonialsView() {
   const { locale, isRtl } = useLanguage();
@@ -48,60 +125,10 @@ export function TestimonialsView() {
         </div>
 
         {/* Testimonials 8-Card Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-20">
-          {TESTIMONIALS_DATA.map((t) => {
-            const name = locale === "ar" ? t.name.ar : t.name.en;
-            const role = locale === "ar" ? t.role.ar : t.role.en;
-            const company = locale === "ar" ? t.company.ar : t.company.en;
-            const quote = locale === "ar" ? t.quote.ar : t.quote.en;
-
-            return (
-              <div
-                key={t.id}
-                className="p-8 sm:p-10 rounded-3xl bg-[#09122F]/90 border border-blue-900/50 flex flex-col justify-between hover:border-cyan-500/40 transition-all duration-300 shadow-2xl relative group"
-                dir={locale === "ar" ? "rtl" : "ltr"}
-              >
-                {/* Subtle top quotation glyph */}
-                <Quote className="w-8 h-8 text-blue-500/20 absolute top-6 right-6 pointer-events-none group-hover:text-cyan-400/20 transition-colors" />
-
-                <div>
-                  {/* Star Rating */}
-                  <div className="flex items-center gap-1 mb-5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-4 h-4 fill-amber-400 text-amber-400"
-                      />
-                    ))}
-                  </div>
-
-                  {/* Quote Body */}
-                  <p className="text-sm sm:text-[15px] text-slate-200 leading-relaxed font-light mb-8">
-                    &ldquo;{quote}&rdquo;
-                  </p>
-                </div>
-
-                {/* Author Block */}
-                <div className="flex items-center gap-4 pt-6 border-t border-blue-900/40">
-                  <div className="w-14 h-14 rounded-full bg-slate-800 shrink-0 overflow-hidden ring-2 ring-cyan-500/30">
-                    <img
-                      src={t.avatar}
-                      alt={name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="text-sm sm:text-base font-bold text-white tracking-wide uppercase">
-                      {name}
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {role}{role && company ? `, ` : ""}{company}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-20 items-start">
+          {TESTIMONIALS_DATA.map((t) => (
+            <TestimonialGridCard key={t.id} t={t} locale={locale} />
+          ))}
         </div>
 
         {/* Call to Action Banner */}
@@ -109,25 +136,21 @@ export function TestimonialsView() {
           <div className="relative z-10 max-w-2xl mx-auto space-y-4">
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
               {locale === "ar"
-                ? "جاهز لبدء قصة نجاح مشروعك القادم؟"
-                : "Ready to Build Your Next Digital Success?"}
+                ? "جاهز لتكون قصة نجاحنا القادمة؟"
+                : "Ready to Be Our Next Success Story?"}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300">
+            <p className="text-sm sm:text-base text-slate-300 font-light max-w-xl mx-auto">
               {locale === "ar"
-                ? "تواصل مع خبرائنا اليوم لمناقشة متطلبات موقعك، هويتك التجارية، أو حملاتك التسويقية."
-                : "Partner with our creative and technical specialists to craft an outstanding online identity and drive real business impact."}
+                ? "دعنا نناقش أهدافك ونبدأ في صياغة الحلول الرقمية المثالية لنمو عملك اليوم."
+                : "Let's discuss your objectives and build high-performance digital experiences tailored to your brand."}
             </p>
-            <div className="pt-4">
+            <div className="pt-2">
               <Link
                 href={siteUrls.contact(locale)}
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-sm hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25 transition-all transform hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/25 transition-all hover:scale-105"
               >
                 <span>{locale === "ar" ? "ابدأ مشروعك الآن" : "Start Your Project"}</span>
-                {isRtl ? (
-                  <ArrowLeft className="w-4 h-4" />
-                ) : (
-                  <ArrowRight className="w-4 h-4" />
-                )}
+                {isRtl ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
               </Link>
             </div>
           </div>

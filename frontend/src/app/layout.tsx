@@ -3,9 +3,11 @@ import { Plus_Jakarta_Sans, Cairo } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { AgencySettingsProvider } from "@/context/AgencySettingsContext";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { MobileFloatingWhatsApp } from "@/components/MobileFloatingWhatsApp";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -47,11 +49,14 @@ export default function RootLayout({
       <body className="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white min-h-screen flex flex-col">
         <LanguageProvider>
           <AuthProvider>
-            <SmoothScroll>
-              <Navbar />
-              <main className="flex-grow pt-20">{children}</main>
-              <Footer />
-            </SmoothScroll>
+            <AgencySettingsProvider>
+              <SmoothScroll>
+                <Navbar />
+                <main className="flex-grow pt-20">{children}</main>
+                <Footer />
+                <MobileFloatingWhatsApp />
+              </SmoothScroll>
+            </AgencySettingsProvider>
           </AuthProvider>
         </LanguageProvider>
       </body>

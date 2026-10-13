@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" fill="none">
+  <g transform="translate(10, 10)">
+    <rect x="0" y="8" width="5" height="16" fill="#334155"/>
+    <rect x="8" y="2" width="5" height="22" fill="#334155"/>
+    <rect x="16" y="12" width="5" height="12" fill="#334155"/>
+  </g>
+  <text x="42" y="28" font-family="system-ui, sans-serif" font-size="16" font-weight="900" fill="#1e293b" letter-spacing="2">EMAAR</text>
+  <text x="42" y="39" font-family="system-ui, sans-serif" font-size="8" font-weight="700" fill="#64748b" letter-spacing="1">DAR WA EMAAR</text>
+</svg>

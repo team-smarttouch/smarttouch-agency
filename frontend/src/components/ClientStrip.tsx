@@ -4,23 +4,59 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { siteUrls } from "@/lib/urls";
+import { apiRequest } from "@/lib/api";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-interface ClientBrand {
-  id: string;
+export interface ClientBrand {
+  id: string | number;
   name: { en: string; ar: string };
   logo: string;
-  link: (locale: "en" | "ar") => string;
-  alt: string;
+  link?: string | ((locale: "en" | "ar") => string);
+  alt?: string;
 }
 
-const CLIENT_BRANDS: ClientBrand[] = [
+const FALLBACK_CLIENT_BRANDS: ClientBrand[] = [
   {
     id: "stc",
     name: { en: "STC", ar: "الاتصالات السعودية STC" },
     logo: "/images/clients/stc.png",
     link: (locale) => siteUrls.portfolioDetail("stc-tamayouz", locale),
     alt: "STC Saudi Telecom Company",
+  },
+  {
+    id: "altazaj",
+    name: { en: "Al Tazaj", ar: "فروج الطازج" },
+    logo: "/images/clients/altazaj.svg",
+    link: (locale) => siteUrls.portfolio(locale),
+    alt: "Al Tazaj",
+  },
+  {
+    id: "aiic",
+    name: { en: "AIIC", ar: "الشركة العربية للتأمين" },
+    logo: "/images/clients/aiic.svg",
+    link: (locale) => siteUrls.portfolio(locale),
+    alt: "Arabian International Insurance Company",
+  },
+  {
+    id: "jahez",
+    name: { en: "Jahez", ar: "جاهز" },
+    logo: "/images/clients/jahez.svg",
+    link: (locale) => siteUrls.portfolio(locale),
+    alt: "Jahez Delivery",
+  },
+  {
+    id: "emaar",
+    name: { en: "Dar Wa Emaar", ar: "دار وإعمار" },
+    logo: "/images/clients/emaar.svg",
+    link: (locale) => siteUrls.portfolio(locale),
+    alt: "Dar Wa Emaar Real Estate",
+  },
+  {
+    id: "weetas",
+    name: { en: "Weetas Real Estate", ar: "ويتاس العقارية" },
+    logo: "/images/clients/weetas.svg",
+    link: (locale) => siteUrls.portfolioDetail("weetas", locale),
+    alt: "Weetas Real Estate Agency",
   },
   {
     id: "obeikan",
@@ -35,27 +71,6 @@ const CLIENT_BRANDS: ClientBrand[] = [
     logo: "/images/clients/awj.png",
     link: (locale) => siteUrls.portfolioDetail("awj", locale),
     alt: "AHC AWJ Holding Company",
-  },
-  {
-    id: "jah",
-    name: { en: "JAH Real Estate", ar: "جاه للتطوير العقاري" },
-    logo: "/images/clients/jah.png",
-    link: (locale) => siteUrls.portfolio(locale),
-    alt: "JAH Real Estate Development",
-  },
-  {
-    id: "mithaq",
-    name: { en: "Mithaq Holding", ar: "ميثاق القابضة" },
-    logo: "/images/clients/mithaq.png",
-    link: (locale) => siteUrls.portfolio(locale),
-    alt: "Mithaq Holding",
-  },
-  {
-    id: "ootlah",
-    name: { en: "Ootlah", ar: "عطلة للسياحة" },
-    logo: "/images/clients/ootlah.png",
-    link: (locale) => siteUrls.portfolio(locale),
-    alt: "Ootlah Holidays & Activities",
   },
   {
     id: "dala",
@@ -73,19 +88,63 @@ const CLIENT_BRANDS: ClientBrand[] = [
   },
 ];
 
-export function ClientStrip() {
+interface ClientStripProps {
+  title?: { en: string; ar: string };
+  className?: string;
+}
+
+export function ClientStrip({ title, className = "" }: ClientStripProps) {
   const { locale, isRtl } = useLanguage();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [clients, setClients] = useState<ClientBrand[]>(FALLBACK_CLIENT_BRANDS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  const totalClients = CLIENT_BRANDS.length;
+  // Fetch live clients from backend database
+  useEffect(() => {
+    let isMounted = true;
+    apiRequest("/clients")
+      .then((res) => {
+        if (isMounted && res?.data && Array.isArray(res.data) && res.data.length > 0) {
+          const mapped: ClientBrand[] = res.data.map((c: any) => ({
+            id: c.id,
+            name: typeof c.name === "object" ? c.name : { en: c.name, ar: c.name },
+            logo: c.logo,
+            link: c.link || "/portfolio.html",
+            alt: c.alt || (typeof c.name === "object" ? c.name.en : c.name),
+          }));
+          setClients(mapped);
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not fetch clients from database, using fallback:", err);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const totalClients = clients.length;
+
+  const resolveLink = (client: ClientBrand) => {
+    if (typeof client.link === "function") {
+      return client.link(locale);
+    }
+    if (typeof client.link === "string" && client.link) {
+      if (client.link.startsWith("http://") || client.link.startsWith("https://")) {
+        return client.link;
+      }
+      const clean = client.link.replace(/^\/?(en|ar)\//, "").replace(/^\//, "");
+      return `/${locale}/${clean}`;
+    }
+    return siteUrls.portfolio(locale);
+  };
 
   // Scroll to specific index
   const scrollToIndex = useCallback(
     (index: number) => {
       const container = scrollContainerRef.current;
-      if (!container) return;
+      if (!container || totalClients === 0) return;
 
       const itemWidth = container.scrollWidth / totalClients;
       const targetIndex = (index + totalClients) % totalClients;
@@ -121,7 +180,7 @@ export function ClientStrip() {
   // Sync index on manual user scroll
   const handleScroll = () => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container || totalClients === 0) return;
 
     const scrollLeft = Math.abs(container.scrollLeft);
     const itemWidth = container.scrollWidth / totalClients;
@@ -131,13 +190,21 @@ export function ClientStrip() {
     }
   };
 
+  const displayTitle = title
+    ? locale === "ar"
+      ? title.ar
+      : title.en
+    : locale === "ar"
+    ? "عملاؤنا"
+    : "OUR CLIENTS";
+
   return (
-    <section className="py-12 sm:py-14 bg-white border-b border-slate-100 overflow-hidden relative select-none">
+    <section className={`py-12 sm:py-14 bg-white border-b border-slate-100 overflow-hidden relative select-none ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header matching exact attached design */}
         <div className="text-center mb-10">
           <h2 className="text-xs sm:text-sm uppercase tracking-[0.25em] font-bold text-slate-800">
-            {locale === "ar" ? "عملاؤنا" : "OUR CLIENTS"}
+            {displayTitle}
           </h2>
         </div>
 
@@ -172,32 +239,37 @@ export function ClientStrip() {
             className="flex items-center gap-6 sm:gap-8 lg:gap-10 overflow-x-auto scroll-smooth no-scrollbar snap-x snap-mandatory py-4 px-2"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {CLIENT_BRANDS.map((client, idx) => (
-              <div
-                key={client.id}
-                className="shrink-0 w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/6 snap-start flex items-center justify-center"
-              >
-                <Link
-                  href={client.link(locale)}
-                  title={`${client.name[locale]} — ${locale === "ar" ? "عرض في معرض الأعمال" : "View in Portfolio"}`}
-                  className="group/client block p-3 rounded-xl transition-all duration-300 hover:bg-slate-50/80 hover:-translate-y-1"
+            {clients.map((client) => {
+              const clientName = client.name ? (locale === "ar" ? client.name.ar : client.name.en) : "";
+              const clientAlt = client.alt || clientName;
+
+              return (
+                <div
+                  key={client.id}
+                  className="shrink-0 w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/6 snap-start flex items-center justify-center"
                 >
-                  <div className="h-12 sm:h-14 w-28 sm:w-36 flex items-center justify-center">
-                    <img
-                      src={client.logo}
-                      alt={client.alt}
-                      className="max-h-full max-w-full object-contain filter grayscale-[30%] opacity-75 group-hover/client:grayscale-0 group-hover/client:opacity-100 group-hover/client:scale-105 transition-all duration-300"
-                      loading="lazy"
-                    />
-                  </div>
-                </Link>
-              </div>
-            ))}
+                  <Link
+                    href={resolveLink(client)}
+                    title={`${clientName} — ${locale === "ar" ? "عرض في معرض الأعمال" : "View in Portfolio"}`}
+                    className="group/client block p-3 rounded-xl transition-all duration-300 hover:bg-slate-50/80 hover:-translate-y-1"
+                  >
+                    <div className="h-12 sm:h-14 w-28 sm:w-36 flex items-center justify-center">
+                      <img
+                        src={client.logo}
+                        alt={clientAlt}
+                        className="max-h-full max-w-full object-contain filter grayscale-[30%] opacity-75 group-hover/client:grayscale-0 group-hover/client:opacity-100 group-hover/client:scale-105 transition-all duration-300"
+                        loading="lazy"
+                      />
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
           </div>
 
           {/* Dot Indicators */}
           <div className="flex justify-center items-center gap-1.5 mt-4">
-            {CLIENT_BRANDS.map((_, dotIdx) => (
+            {clients.map((_, dotIdx) => (
               <button
                 key={dotIdx}
                 onClick={() => scrollToIndex(dotIdx)}

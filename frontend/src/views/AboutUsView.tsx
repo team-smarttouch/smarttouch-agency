@@ -7,6 +7,7 @@ import { siteUrls } from "@/lib/urls";
 import { InquiryModal } from "@/components/InquiryModal";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { ReadyToStartBanner } from "@/components/ReadyToStartBanner";
+import { ClientStrip } from "@/components/ClientStrip";
 
 export function AboutUsView() {
   const { locale, isRtl } = useLanguage();
@@ -161,83 +162,9 @@ export function AboutUsView() {
       <ReadyToStartBanner bgVariant="white" />
 
       {/* ========================================================= */}
-      {/* SECTION 6: TOP CLIENTS (Grayscale Monochromatic Logos) */}
+      {/* SECTION 6: TOP CLIENTS (Database-Connected Carousel) */}
       {/* ========================================================= */}
-      <section className="py-16 sm:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-          <div className="text-center mb-10">
-            <span className="text-xs uppercase tracking-widest text-slate-400 font-bold">
-              {locale === "ar" ? "أبرز العملاء" : "TOP CLIENTS"}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 sm:gap-12 items-center justify-items-center opacity-70 hover:opacity-100 transition-opacity">
-            {/* 1. STC */}
-            <div className="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105">
-              <svg className="w-8 h-8 text-slate-700 group-hover:text-[#4F008C] transition-colors" viewBox="0 0 40 40" fill="currentColor">
-                <rect x="6" y="8" width="8" height="24" rx="4" transform="rotate(-15 10 20)" fill="currentColor" />
-                <rect x="16" y="6" width="8" height="28" rx="4" transform="rotate(-15 20 20)" fill="currentColor" />
-                <rect x="26" y="10" width="8" height="20" rx="4" transform="rotate(-15 30 20)" fill="currentColor" />
-              </svg>
-              <span className="text-2xl font-black text-slate-800 tracking-tighter group-hover:text-[#4F008C] transition-colors">stc</span>
-            </div>
-
-            {/* 2. Al Tazaj / Al Baik */}
-            <div className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105">
-              <div className="w-12 h-12 rounded-full border-2 border-slate-700 group-hover:border-red-600 flex items-center justify-center p-1 transition-colors">
-                <svg className="w-7 h-7 text-slate-700 group-hover:text-red-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2C8 2 6 5 6 8c0 4 3 6 3 9 0 2 1 3 3 3s3-1 3-3c0-3 3-5 3-9 0-3-2-6-6-6z" />
-                  <circle cx="10" cy="7" r="1" fill="currentColor" />
-                  <path d="M14 8l2-1-2-1" />
-                </svg>
-              </div>
-              <span className="text-[11px] font-bold text-slate-700 mt-1 tracking-wider uppercase group-hover:text-red-600 transition-colors">
-                {locale === "ar" ? "فروج الطازج" : "AL TAZAJ"}
-              </span>
-            </div>
-
-            {/* 3. AIIC */}
-            <div className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105">
-              <span className="text-2xl font-black text-slate-800 tracking-wider group-hover:text-blue-600 transition-colors">
-                AIIC
-              </span>
-              <span className="text-[8px] font-medium text-slate-500 uppercase tracking-tight text-center">
-                Arabian Int. Insurance
-              </span>
-            </div>
-
-            {/* 4. Jahez */}
-            <div className="flex items-center group cursor-pointer transition-transform hover:scale-105">
-              <div className="text-2xl font-black text-slate-800 tracking-tight flex items-baseline gap-1 group-hover:text-amber-500 transition-colors">
-                <span className="text-3xl font-extrabold text-slate-700 group-hover:text-amber-500 transition-colors font-serif">جـ</span>
-                <span className="font-extrabold">jahez</span>
-              </div>
-            </div>
-
-            {/* 5. EMAAR */}
-            <div className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105">
-              <div className="flex items-end gap-0.5 h-6 mb-1">
-                <div className="w-1.5 h-4 bg-slate-700 group-hover:bg-[#0A1128] transition-colors" />
-                <div className="w-1.5 h-6 bg-slate-700 group-hover:bg-[#0A1128] transition-colors" />
-                <div className="w-1.5 h-3 bg-slate-700 group-hover:bg-[#0A1128] transition-colors" />
-              </div>
-              <span className="text-sm font-black tracking-widest text-slate-800 group-hover:text-[#0A1128] transition-colors uppercase">
-                EMAAR
-              </span>
-            </div>
-
-            {/* 6. Weetas */}
-            <div className="flex flex-col items-center group cursor-pointer transition-transform hover:scale-105">
-              <span className="text-xl font-bold italic font-serif text-slate-800 tracking-wide group-hover:text-blue-700 transition-colors">
-                Weetas
-              </span>
-              <span className="text-[8px] text-slate-500 tracking-widest uppercase">
-                Real Estate
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ClientStrip title={{ en: "TOP CLIENTS", ar: "أبرز العملاء" }} />
 
       {/* ========================================================= */}
       {/* SECTION 7: WHY SMART TOUCH? (2 Columns: Title + Description & Button) */}
