@@ -30,18 +30,16 @@ export function ContactUsView() {
   const [companyName, setCompanyName] = useState("");
   const [workEmail, setWorkEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  // By default, match the selected items in the user's design:
-  // "Web & App Development" and "SEO Services"
-  const [selectedServices, setSelectedServices] = useState<string[]>([
-    "web-app-development",
-    "seo-services",
-  ]);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [servicesError, setServicesError] = useState(false);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const toggleService = (id: string) => {
+    setServicesError(false);
+    if (errorMessage) setErrorMessage("");
     setSelectedServices((prev) =>
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
     );
@@ -49,6 +47,15 @@ export function ContactUsView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (selectedServices.length === 0) {
+      setServicesError(true);
+      setErrorMessage(
+        locale === "ar"
+          ? "يرجى تحديد خدمة واحدة على الأقل من قائمة (الخدمات المطلوبة)."
+          : "Please select at least one service under 'Interested in'."
+      );
+      return;
+    }
     setIsSubmitting(true);
     setErrorMessage("");
 
@@ -187,10 +194,23 @@ export function ContactUsView() {
 
               {/* Interested in */}
               <div>
-                <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-3">
-                  {locale === "ar" ? "الخدمات المطلوبة:" : "Interested in:"}
-                </label>
-                <div className="flex flex-wrap gap-2.5">
+                <div className="flex items-center justify-between mb-2.5">
+                  <label className="block text-xs sm:text-[13px] font-medium text-slate-700">
+                    {locale === "ar" ? "الخدمات المطلوبة *" : "Interested in *"}
+                  </label>
+                  {servicesError && (
+                    <span className="text-xs text-rose-600 font-semibold animate-pulse">
+                      {locale === "ar"
+                        ? "يرجى اختيار خدمة واحدة على الأقل"
+                        : "Please select at least 1 service"}
+                    </span>
+                  )}
+                </div>
+                <div
+                  className={`flex flex-wrap gap-2.5 transition-all duration-300 rounded-xl ${
+                    servicesError ? "p-2 ring-2 ring-rose-400 bg-rose-50/50" : ""
+                  }`}
+                >
                   {SERVICES_LIST.map((service) => {
                     const isSelected = selectedServices.includes(service.id);
                     return (
