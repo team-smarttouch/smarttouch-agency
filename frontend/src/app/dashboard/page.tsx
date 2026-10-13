@@ -2094,23 +2094,23 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
                 {clientsList.map((client) => {
                   const clientName = typeof client.name === "object" ? client.name.en : client.name;
                   return (
                     <div
                       key={client.id}
-                      className={`p-3 rounded-2xl border transition-all flex flex-col items-center justify-between text-center gap-2 ${
+                      className={`p-4 rounded-2xl border transition-all flex flex-col items-center justify-between text-center gap-3 ${
                         client.is_active
                           ? "bg-slate-950/70 border-slate-800"
                           : "bg-slate-950/30 border-slate-800/40 opacity-50"
                       }`}
                     >
-                      <div className="w-full h-12 flex items-center justify-center bg-white/5 rounded-xl p-2">
+                      <div className="w-full h-24 flex items-center justify-center bg-white/5 rounded-xl p-3">
                         <img
                           src={client.logo}
                           alt={clientName}
-                          className="max-h-8 max-w-full object-contain filter brightness-90 contrast-125"
+                          className="max-h-20 max-w-full object-contain filter brightness-95"
                           onError={(e) => {
                             (e.target as HTMLElement).style.display = "none";
                           }}

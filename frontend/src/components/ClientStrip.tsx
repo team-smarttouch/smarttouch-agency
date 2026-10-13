@@ -237,13 +237,13 @@ export function ClientStrip({ title, className = "" }: ClientStripProps) {
                   <Link
                     href={resolveLink(client)}
                     title={`${clientName} — ${locale === "ar" ? "عرض في معرض الأعمال" : "View in Portfolio"}`}
-                    className="group/client block p-3 rounded-xl transition-all duration-300 hover:bg-slate-50/80 hover:-translate-y-1"
+                    className="group/client block p-2 sm:p-3 rounded-2xl transition-all duration-300 hover:bg-slate-50/80 hover:-translate-y-1"
                   >
-                    <div className="h-12 sm:h-14 w-32 sm:w-40 flex items-center justify-center">
+                    <div className="w-[100px] h-[100px] sm:w-[110px] sm:h-[110px] flex items-center justify-center">
                       <img
                         src={client.logo}
                         alt={clientAlt}
-                        className="max-h-full max-w-full object-contain opacity-90 group-hover/client:opacity-100 group-hover/client:scale-105 transition-all duration-300"
+                        className="max-h-[95px] max-w-[95px] sm:max-h-[100px] sm:max-w-[100px] w-auto h-auto object-contain opacity-90 group-hover/client:opacity-100 group-hover/client:scale-105 transition-all duration-300"
                         loading="lazy"
                       />
                     </div>
