@@ -314,7 +314,7 @@ export function ServicesHubView() {
                 <div
                   key={service.slug}
                   id={`service-${service.slug}`}
-                  className="rounded-3xl bg-[#F6F8FD] border border-blue-100/60 p-8 sm:p-10 md:p-12 shadow-sm scroll-mt-32 transition-all hover:shadow-md"
+                  className="rounded-3xl bg-[#F6F8FD] border border-blue-100/60 p-8 sm:p-10 md:p-12 shadow-sm scroll-mt-32 transition-all hover:shadow-md overflow-hidden"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-10 items-center">
                     {/* Content Column */}
@@ -339,23 +339,23 @@ export function ServicesHubView() {
                     <div className="md:col-span-6">
                       {/* Card 1: AI & Data Analytics Showcase */}
                       {service.layoutType === "ai" && (
-                        <div className="grid grid-cols-12 gap-3 h-56 sm:h-64">
-                          <div className="col-span-7 rounded-2xl overflow-hidden bg-slate-900 shadow-md">
+                        <div className="grid grid-cols-12 gap-3 h-48 sm:h-52 md:h-56">
+                          <div className="col-span-7 rounded-2xl overflow-hidden bg-slate-900 shadow-md h-full">
                             <img
                               src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80"
                               alt="AI Analytics Screen"
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="col-span-5 flex flex-col gap-3">
-                            <div className="h-1/2 rounded-xl overflow-hidden bg-slate-900 shadow-sm">
+                          <div className="col-span-5 flex flex-col gap-3 h-full">
+                            <div className="flex-1 min-h-0 rounded-xl overflow-hidden bg-slate-900 shadow-sm relative">
                               <img
                                 src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&auto=format&fit=crop&q=80"
                                 alt="Engineer Workstation"
                                 className="w-full h-full object-cover"
                               />
                             </div>
-                            <div className="h-1/2 rounded-xl overflow-hidden bg-[#0A1128] flex items-center justify-center p-2 shadow-sm">
+                            <div className="flex-1 min-h-0 rounded-xl overflow-hidden bg-[#0A1128] flex items-center justify-center p-2 shadow-sm relative">
                               <img
                                 src="/images/about/floating-3d-cube.jpg"
                                 alt="3D Energy Core"
@@ -368,7 +368,7 @@ export function ServicesHubView() {
 
                       {/* Card 2: CRM & Marketing Automation Showcase */}
                       {service.layoutType === "crm" && (
-                        <div className="rounded-2xl overflow-hidden shadow-md h-56 sm:h-64 bg-slate-900 group">
+                        <div className="rounded-2xl overflow-hidden shadow-md h-48 sm:h-52 md:h-56 bg-slate-900 group">
                           <img
                             src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop&q=80"
                             alt="CRM Business Team"
@@ -379,23 +379,23 @@ export function ServicesHubView() {
 
                       {/* Card 3: Marketing Technology Showcase */}
                       {service.layoutType === "martech" && (
-                        <div className="grid grid-cols-12 gap-3 h-56 sm:h-64">
-                          <div className="col-span-6 rounded-2xl overflow-hidden bg-slate-900 shadow-md">
+                        <div className="grid grid-cols-12 gap-3 h-48 sm:h-52 md:h-56">
+                          <div className="col-span-6 rounded-2xl overflow-hidden bg-slate-900 shadow-md h-full">
                             <img
                               src="/images/about/our-identity-map.jpg"
                               alt="Martech Digital Grid"
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="col-span-6 flex flex-col gap-3">
-                            <div className="h-1/2 rounded-xl overflow-hidden bg-slate-900 shadow-sm">
+                          <div className="col-span-6 flex flex-col gap-3 h-full">
+                            <div className="flex-1 min-h-0 rounded-xl overflow-hidden bg-slate-900 shadow-sm relative">
                               <img
                                 src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&auto=format&fit=crop&q=80"
                                 alt="Strategy Session"
                                 className="w-full h-full object-cover"
                               />
                             </div>
-                            <div className="h-1/2 rounded-xl overflow-hidden bg-slate-900 shadow-sm">
+                            <div className="flex-1 min-h-0 rounded-xl overflow-hidden bg-slate-900 shadow-sm relative">
                               <img
                                 src="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=400&auto=format&fit=crop&q=80"
                                 alt="Creative Designer"
@@ -408,15 +408,15 @@ export function ServicesHubView() {
 
                       {/* Card 4: SEO Services Showcase */}
                       {service.layoutType === "seo" && (
-                        <div className="grid grid-cols-12 gap-3 h-56 sm:h-64">
-                          <div className="col-span-7 rounded-2xl overflow-hidden bg-slate-900 shadow-md">
+                        <div className="grid grid-cols-12 gap-3 h-48 sm:h-52 md:h-56">
+                          <div className="col-span-7 rounded-2xl overflow-hidden bg-slate-900 shadow-md h-full">
                             <img
                               src="https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=600&auto=format&fit=crop&q=80"
                               alt="Search Analytics"
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="col-span-5 rounded-2xl bg-gradient-to-tr from-blue-200 via-sky-100 to-indigo-200 border border-blue-200/60 p-4 flex flex-col justify-between shadow-sm">
+                          <div className="col-span-5 rounded-2xl bg-gradient-to-tr from-blue-200 via-sky-100 to-indigo-200 border border-blue-200/60 p-4 flex flex-col justify-between shadow-sm h-full">
                             <span className="text-[10px] font-bold text-blue-800 tracking-wider uppercase">Organic Search</span>
                             <div className="space-y-1">
                               <span className="text-2xl font-black text-[#0A1128] tracking-tight">#1 KSA</span>
@@ -428,25 +428,25 @@ export function ServicesHubView() {
 
                       {/* Card 5: Growth Marketing Showcase */}
                       {service.layoutType === "growth" && (
-                        <div className="grid grid-cols-12 gap-3 h-56 sm:h-64">
-                          <div className="col-span-4 rounded-2xl bg-white border border-slate-200/80 flex flex-col items-center justify-center p-4 shadow-sm">
-                            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-2">
-                              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <div className="grid grid-cols-12 gap-3 h-48 sm:h-52 md:h-56">
+                          <div className="col-span-4 rounded-2xl bg-white border border-slate-200/80 flex flex-col items-center justify-center p-3 sm:p-4 shadow-sm h-full">
+                            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-2 shrink-0">
+                              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <circle cx="12" cy="12" r="3" />
                                 <path d="M12 2v3m0 14v3M2 12h3m14 0h3m-3.5-6.5l-2.1 2.1m-8.8 8.8l-2.1 2.1m0-13l2.1 2.1m8.8 8.8l2.1 2.1" />
                               </svg>
                             </div>
                             <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider text-center">Omnichannel</span>
                           </div>
-                          <div className="col-span-8 flex flex-col gap-3">
-                            <div className="h-1/2 rounded-xl overflow-hidden bg-slate-900 shadow-sm">
+                          <div className="col-span-8 flex flex-col gap-3 h-full">
+                            <div className="flex-1 min-h-0 rounded-xl overflow-hidden bg-slate-900 shadow-sm relative">
                               <img
                                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&auto=format&fit=crop&q=80"
                                 alt="Growth Team"
                                 className="w-full h-full object-cover"
                               />
                             </div>
-                            <div className="h-1/2 rounded-xl overflow-hidden bg-slate-900 shadow-sm">
+                            <div className="flex-1 min-h-0 rounded-xl overflow-hidden bg-slate-900 shadow-sm relative">
                               <img
                                 src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=500&auto=format&fit=crop&q=80"
                                 alt="Collaborative Sprint"
@@ -459,15 +459,15 @@ export function ServicesHubView() {
 
                       {/* Card 6: Web & App Development Showcase */}
                       {service.layoutType === "dev" && (
-                        <div className="grid grid-cols-12 gap-3 h-56 sm:h-64">
-                          <div className="col-span-7 rounded-2xl overflow-hidden bg-slate-900 shadow-md">
+                        <div className="grid grid-cols-12 gap-3 h-48 sm:h-52 md:h-56">
+                          <div className="col-span-7 rounded-2xl overflow-hidden bg-slate-900 shadow-md h-full">
                             <img
                               src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop&q=80"
                               alt="Code IDE Terminal"
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="col-span-5 rounded-2xl bg-gradient-to-tr from-[#141E30] to-[#243B55] p-4 flex flex-col justify-between text-white shadow-md">
+                          <div className="col-span-5 rounded-2xl bg-gradient-to-tr from-[#141E30] to-[#243B55] p-4 flex flex-col justify-between text-white shadow-md h-full">
                             <span className="text-[10px] font-mono text-cyan-400">Next.js 16 + Laravel</span>
                             <div className="space-y-1">
                               <span className="text-xl font-black text-white">60fps</span>
@@ -479,7 +479,7 @@ export function ServicesHubView() {
 
                       {/* Card 7: Subscription Marketing Plans Showcase */}
                       {service.layoutType === "subscription" && (
-                        <div className="rounded-2xl overflow-hidden shadow-md h-56 sm:h-64 bg-slate-900 group">
+                        <div className="rounded-2xl overflow-hidden shadow-md h-48 sm:h-52 md:h-56 bg-slate-900 group">
                           <img
                             src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&auto=format&fit=crop&q=80"
                             alt="Subscription Marketing Strategy"
@@ -490,7 +490,7 @@ export function ServicesHubView() {
 
                       {/* Card 8: Hosting & Infrastructure Showcase */}
                       {service.layoutType === "hosting" && (
-                        <div className="rounded-2xl overflow-hidden shadow-md h-56 sm:h-64 bg-slate-900 group">
+                        <div className="rounded-2xl overflow-hidden shadow-md h-48 sm:h-52 md:h-56 bg-slate-900 group">
                           <img
                             src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop&q=80"
                             alt="Cloud Server Datacenter"
