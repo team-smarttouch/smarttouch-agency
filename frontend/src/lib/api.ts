@@ -1,9 +1,29 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-export const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL ||
-  (process.env.NEXT_PUBLIC_API_URL
-    ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, "")
-    : "http://localhost:8000");
+function isLocalhost(): boolean {
+  if (typeof window === "undefined") {
+    return process.env.NODE_ENV !== "production";
+  }
+  const host = window.location.hostname;
+  return host === "localhost" || host === "127.0.0.1" || host === "::1";
+}
+
+export function getBackendUrl(): string {
+  if (process.env.NEXT_PUBLIC_BACKEND_URL) {
+    return process.env.NEXT_PUBLIC_BACKEND_URL;
+  }
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, "");
+  }
+  return isLocalhost() ? "http://localhost:8000" : "";
+}
+
+export function getApiBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  return isLocalhost() ? "http://localhost:8000/api" : "";
+}
+
+export const BACKEND_URL = getBackendUrl();
 
 export function getBackendMediaUrl(pathOrUrl?: string): string {
   if (!pathOrUrl) return "";
@@ -15,7 +35,8 @@ export function getBackendMediaUrl(pathOrUrl?: string): string {
     return pathOrUrl;
   }
   const cleanPath = pathOrUrl.startsWith("/") ? pathOrUrl : `/${pathOrUrl}`;
-  return `${BACKEND_URL}${cleanPath}`;
+  const base = getBackendUrl();
+  return base ? `${base}${cleanPath}` : cleanPath;
 }
 
 export interface TranslatableText {
@@ -150,6 +171,11 @@ export async function apiRequest<T = any>(
   options: RequestInit = {},
   token?: string
 ): Promise<T> {
+  const baseUrl = getApiBaseUrl();
+  if (!baseUrl) {
+    throw new Error("No remote API endpoint configured. Using local fallback data.");
+  }
+
   const headers: HeadersInit = {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -161,7 +187,7 @@ export async function apiRequest<T = any>(
     (headers as any)["Authorization"] = `Bearer ${authToken}`;
   }
 
-  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const res = await fetch(`${baseUrl}${endpoint}`, {
     ...options,
     headers,
   });
@@ -177,6 +203,11 @@ export async function uploadImage(
   file: File,
   token?: string
 ): Promise<{ success: boolean; url: string; filename: string }> {
+  const baseUrl = getApiBaseUrl();
+  if (!baseUrl) {
+    throw new Error("No remote API endpoint configured.");
+  }
+
   const formData = new FormData();
   formData.append("image", file);
   formData.append("file", file);
@@ -194,7 +225,7 @@ export async function uploadImage(
     (headers as any)["Authorization"] = `Bearer ${authToken}`;
   }
 
-  const res = await fetch(`${API_BASE_URL}/dashboard/upload`, {
+  const res = await fetch(`${baseUrl}/dashboard/upload`, {
     method: "POST",
     headers,
     body: formData,

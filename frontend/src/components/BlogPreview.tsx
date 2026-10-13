@@ -108,10 +108,7 @@ export function BlogPreview() {
                         src={post.featured_image}
                         alt={title}
                         onError={(e) => {
-                          const target = e.currentTarget;
-                          if (!target.src.includes(":8000") && post.featured_image?.startsWith("/")) {
-                            target.src = `http://localhost:8000${post.featured_image}`;
-                          }
+                          e.currentTarget.style.display = "none";
                         }}
                         className="absolute inset-0 w-full h-full object-cover"
                       />

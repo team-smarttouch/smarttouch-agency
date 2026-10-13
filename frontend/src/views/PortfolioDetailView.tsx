@@ -299,10 +299,7 @@ export function PortfolioDetailView({ slug }: PortfolioDetailViewProps) {
                   alt={`${title} Gallery Screen ${gIdx + 1}`}
                   className="w-full h-auto object-cover block"
                   onError={(e) => {
-                    const target = e.currentTarget;
-                    if (!target.src.includes(":8000") && gImg.startsWith("/")) {
-                      target.src = `http://localhost:8000${gImg}`;
-                    }
+                    e.currentTarget.style.display = "none";
                   }}
                 />
               </div>

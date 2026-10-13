@@ -226,10 +226,7 @@ export function PortfolioView() {
                         alt={projectTitle}
                         className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                         onError={(e) => {
-                          const target = e.currentTarget;
-                          if (!target.src.includes(":8000") && item.image.startsWith("/")) {
-                            target.src = `http://localhost:8000${item.image}`;
-                          }
+                          e.currentTarget.style.display = "none";
                         }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-black/20" />
@@ -358,10 +355,7 @@ export function PortfolioView() {
                 alt={locale === "ar" ? selectedProject.title.ar : selectedProject.title.en}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  const target = e.currentTarget;
-                  if (!target.src.includes(":8000") && selectedProject.image.startsWith("/")) {
-                    target.src = `http://localhost:8000${selectedProject.image}`;
-                  }
+                  e.currentTarget.style.display = "none";
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#000E38] via-[#000E38]/40 to-transparent p-6 flex flex-col justify-end">
