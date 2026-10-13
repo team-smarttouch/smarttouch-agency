@@ -19,72 +19,58 @@ const FALLBACK_CLIENT_BRANDS: ClientBrand[] = [
   {
     id: "stc",
     name: { en: "STC", ar: "الاتصالات السعودية STC" },
-    logo: "/images/clients/stc.png",
+    logo: "/images/clients/client_stc.png",
     link: (locale) => siteUrls.portfolioDetail("stc-tamayouz", locale),
     alt: "STC Saudi Telecom Company",
   },
   {
-    id: "altazaj",
-    name: { en: "Al Tazaj", ar: "فروج الطازج" },
-    logo: "/images/clients/altazaj.svg",
-    link: (locale) => siteUrls.portfolio(locale),
-    alt: "Al Tazaj",
-  },
-  {
-    id: "aiic",
-    name: { en: "AIIC", ar: "الشركة العربية للتأمين" },
-    logo: "/images/clients/aiic.svg",
-    link: (locale) => siteUrls.portfolio(locale),
-    alt: "Arabian International Insurance Company",
-  },
-  {
-    id: "jahez",
-    name: { en: "Jahez", ar: "جاهز" },
-    logo: "/images/clients/jahez.svg",
-    link: (locale) => siteUrls.portfolio(locale),
-    alt: "Jahez Delivery",
-  },
-  {
-    id: "emaar",
+    id: "darwa_emaar",
     name: { en: "Dar Wa Emaar", ar: "دار وإعمار" },
-    logo: "/images/clients/emaar.svg",
+    logo: "/images/clients/client_darwa_emaar.png",
     link: (locale) => siteUrls.portfolio(locale),
-    alt: "Dar Wa Emaar Real Estate",
-  },
-  {
-    id: "weetas",
-    name: { en: "Weetas Real Estate", ar: "ويتاس العقارية" },
-    logo: "/images/clients/weetas.svg",
-    link: (locale) => siteUrls.portfolioDetail("weetas", locale),
-    alt: "Weetas Real Estate Agency",
+    alt: "Dar Wa Emaar Real Estate Development",
   },
   {
     id: "obeikan",
-    name: { en: "Obeikan Education", ar: "العبيكان للتعليم" },
-    logo: "/images/clients/obeikan.png",
+    name: { en: "Obeikan Education", ar: "مجموعة العبيكان" },
+    logo: "/images/clients/client_obeikan.png",
     link: (locale) => siteUrls.portfolio(locale),
-    alt: "Obeikan Education",
-  },
-  {
-    id: "awj",
-    name: { en: "AWJ Holding Company", ar: "شركة أوج القابضة" },
-    logo: "/images/clients/awj.png",
-    link: (locale) => siteUrls.portfolioDetail("awj", locale),
-    alt: "AHC AWJ Holding Company",
+    alt: "Obeikan Education & Investment Group",
   },
   {
     id: "dala",
     name: { en: "Dala Water", ar: "مياه دالا" },
-    logo: "/images/clients/dala.png",
+    logo: "/images/clients/dala-logo.png",
     link: (locale) => siteUrls.portfolioDetail("dala", locale),
     alt: "Dala Water Factory",
   },
   {
     id: "homefix",
     name: { en: "Homefix", ar: "هوم فيكس" },
-    logo: "/images/clients/homefix.png",
+    logo: "/images/clients/client_homefix.png",
     link: (locale) => siteUrls.portfolioDetail("homefix", locale),
     alt: "Homefix Maintenance & Facilities",
+  },
+  {
+    id: "awj",
+    name: { en: "AWJ Holding Company", ar: "شركة أوج القابضة" },
+    logo: "/images/clients/AWJ-Holding.png",
+    link: (locale) => siteUrls.portfolioDetail("awj", locale),
+    alt: "AWJ Holding Company",
+  },
+  {
+    id: "mithaq",
+    name: { en: "Mithaq Holding", ar: "ميثاق القابضة" },
+    logo: "/images/clients/MITHAQ-HOLDING.png",
+    link: (locale) => siteUrls.portfolio(locale),
+    alt: "Mithaq Holding Company",
+  },
+  {
+    id: "jah",
+    name: { en: "JAH Real Estate", ar: "جاه للتطوير العقاري" },
+    logo: "/images/clients/client_jah.png",
+    link: (locale) => siteUrls.portfolio(locale),
+    alt: "JAH Real Estate Development",
   },
 ];
 
@@ -100,13 +86,13 @@ export function ClientStrip({ title, className = "" }: ClientStripProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Fetch live clients from backend database
+  // Fetch live clients from backend database, constrained to exactly 8 active clients
   useEffect(() => {
     let isMounted = true;
     apiRequest("/clients")
       .then((res) => {
         if (isMounted && res?.data && Array.isArray(res.data) && res.data.length > 0) {
-          const mapped: ClientBrand[] = res.data.map((c: any) => ({
+          const mapped: ClientBrand[] = res.data.slice(0, 8).map((c: any) => ({
             id: c.id,
             name: typeof c.name === "object" ? c.name : { en: c.name, ar: c.name },
             logo: c.logo,
@@ -199,11 +185,11 @@ export function ClientStrip({ title, className = "" }: ClientStripProps) {
     : "OUR CLIENTS";
 
   return (
-    <section className={`py-12 sm:py-14 bg-white border-b border-slate-100 overflow-hidden relative select-none ${className}`}>
+    <section className={`py-14 sm:py-16 bg-white border-b border-slate-100 overflow-hidden relative select-none ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header matching exact attached design */}
-        <div className="text-center mb-10">
-          <h2 className="text-xs sm:text-sm uppercase tracking-[0.25em] font-bold text-slate-800">
+        <div className="text-center mb-10 sm:mb-12">
+          <h2 className="text-xs sm:text-sm uppercase tracking-[0.25em] font-bold text-[#0B1536]">
             {displayTitle}
           </h2>
         </div>
@@ -232,32 +218,32 @@ export function ClientStrip({ title, className = "" }: ClientStripProps) {
             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
 
-          {/* Scrolling Track */}
+          {/* Scrolling Track: 5 items visible per screen on desktop matching screenshot */}
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
             className="flex items-center gap-6 sm:gap-8 lg:gap-10 overflow-x-auto scroll-smooth no-scrollbar snap-x snap-mandatory py-4 px-2"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {clients.map((client) => {
+            {clients.slice(0, 8).map((client) => {
               const clientName = client.name ? (locale === "ar" ? client.name.ar : client.name.en) : "";
               const clientAlt = client.alt || clientName;
 
               return (
                 <div
                   key={client.id}
-                  className="shrink-0 w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/6 snap-start flex items-center justify-center"
+                  className="shrink-0 w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5 snap-start flex items-center justify-center"
                 >
                   <Link
                     href={resolveLink(client)}
                     title={`${clientName} — ${locale === "ar" ? "عرض في معرض الأعمال" : "View in Portfolio"}`}
                     className="group/client block p-3 rounded-xl transition-all duration-300 hover:bg-slate-50/80 hover:-translate-y-1"
                   >
-                    <div className="h-12 sm:h-14 w-28 sm:w-36 flex items-center justify-center">
+                    <div className="h-12 sm:h-14 w-32 sm:w-40 flex items-center justify-center">
                       <img
                         src={client.logo}
                         alt={clientAlt}
-                        className="max-h-full max-w-full object-contain filter grayscale-[30%] opacity-75 group-hover/client:grayscale-0 group-hover/client:opacity-100 group-hover/client:scale-105 transition-all duration-300"
+                        className="max-h-full max-w-full object-contain opacity-90 group-hover/client:opacity-100 group-hover/client:scale-105 transition-all duration-300"
                         loading="lazy"
                       />
                     </div>
@@ -267,17 +253,17 @@ export function ClientStrip({ title, className = "" }: ClientStripProps) {
             })}
           </div>
 
-          {/* Dot Indicators */}
-          <div className="flex justify-center items-center gap-1.5 mt-4">
-            {clients.map((_, dotIdx) => (
+          {/* Dot Indicators matching exact attached design: 1 active pill bar + small circular dots */}
+          <div className="flex justify-center items-center gap-1.5 mt-8">
+            {clients.slice(0, 8).map((_, dotIdx) => (
               <button
                 key={dotIdx}
                 onClick={() => scrollToIndex(dotIdx)}
                 aria-label={`Go to client slide ${dotIdx + 1}`}
                 className={`transition-all duration-300 rounded-full cursor-pointer ${
                   currentIndex === dotIdx
-                    ? "w-6 h-1.5 bg-slate-800"
-                    : "w-1.5 h-1.5 bg-slate-300 hover:bg-slate-500"
+                    ? "w-6 h-1 rounded-full bg-[#0B1536]"
+                    : "w-1.5 h-1.5 rounded-full bg-[#D1D9E6] hover:bg-slate-400"
                 }`}
               />
             ))}
