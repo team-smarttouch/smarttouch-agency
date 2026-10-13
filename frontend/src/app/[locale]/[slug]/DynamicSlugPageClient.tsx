@@ -42,7 +42,7 @@ export function DynamicSlugPageClient({ locale, slug }: Props) {
   }
 
   // 3. About Us: about-us.html
-  if (cleanSlug === "about-us" || cleanSlug === "about") {
+  if (cleanSlug === "about-us" || cleanSlug === "about" || cleanSlug === "clients") {
     return <AboutUsView />;
   }
 

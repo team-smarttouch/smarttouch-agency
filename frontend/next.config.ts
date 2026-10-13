@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
         source: "/uploads/:path*",
         destination: `${backendUrl}/uploads/:path*`,
       },
+      {
+        source: "/:slug.html",
+        destination: "/en/:slug.html",
+      },
+      {
+        source: "/portfolio/:slug.html",
+        destination: "/en/portfolio/:slug.html",
+      },
+      {
+        source: "/blog/:slug.html",
+        destination: "/en/blog/:slug.html",
+      },
     ];
   },
 };
