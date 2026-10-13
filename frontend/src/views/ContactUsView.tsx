@@ -13,17 +13,14 @@ interface ServiceOption {
 }
 
 const SERVICES_LIST: ServiceOption[] = [
-  { id: "brand-identity", label: { en: "Brand Identity", ar: "الهوية التجارية" } },
-  { id: "motion-graphic", label: { en: "Motion Graphic", ar: "موشن جرافيك" } },
-  { id: "photography", label: { en: "Photography", ar: "التصوير الفوتوغرافي" } },
-  { id: "web-design", label: { en: "Web Design & Development", ar: "تصميم وتطوير المواقع" } },
-  { id: "mobile-app", label: { en: "Mobile App", ar: "تطبيقات الجوال" } },
-  { id: "ecommerce", label: { en: "E-Commerce Web Design", ar: "تصميم المتاجر الإلكترونية" } },
-  { id: "seo", label: { en: "Search Engine Optimization", ar: "تحسين محركات البحث SEO" } },
-  { id: "social-media", label: { en: "Social Media Marketing", ar: "التسويق عبر وسائل التواصل" } },
-  { id: "influencer", label: { en: "Social Media Influencer", ar: "التسويق عبر المؤثرين" } },
-  { id: "content", label: { en: "Content Production", ar: "إنتاج المحتوى" } },
-  { id: "cro", label: { en: "Conversion Rate Optimization", ar: "تحسين معدل التحويل CRO" } },
+  { id: "ai-data-analytics", label: { en: "AI & Data Analytics", ar: "الذكاء الاصطناعي وتحليل البيانات" } },
+  { id: "crm-marketing-automation", label: { en: "CRM & Marketing Automation", ar: "إدارة علاقات العملاء وأتمتة التسويق" } },
+  { id: "marketing-technology", label: { en: "Marketing Technology", ar: "تكنولوجيا التسويق والحلول الرقمية" } },
+  { id: "seo-services", label: { en: "SEO Services", ar: "خدمات تحسين محركات البحث" } },
+  { id: "growth-marketing", label: { en: "Growth Marketing", ar: "التسويق للنمو وتوسيع الأعمال" } },
+  { id: "web-app-development", label: { en: "Web & App Development", ar: "تطوير تطبيقات الويب والجوال" } },
+  { id: "subscription-marketing", label: { en: "Subscription Marketing Plans", ar: "باقات التسويق بالاشتراك الشهري" } },
+  { id: "hosting-infrastructure", label: { en: "Hosting & Infrastructure", ar: "الاستضافة والبنية التحتية السحابية" } },
 ];
 
 export function ContactUsView() {
@@ -34,10 +31,10 @@ export function ContactUsView() {
   const [workEmail, setWorkEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   // By default, match the selected items in the user's design:
-  // "Web Design & Development" and "Search Engine Optimization"
+  // "Web & App Development" and "SEO Services"
   const [selectedServices, setSelectedServices] = useState<string[]>([
-    "web-design",
-    "seo",
+    "web-app-development",
+    "seo-services",
   ]);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

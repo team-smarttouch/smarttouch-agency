@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { Modal } from "./Modal";
 import { useLanguage } from "@/context/LanguageContext";
 import { apiRequest, ServiceItem } from "@/lib/api";
+import { FALLBACK_SERVICES } from "@/data/fallbackServices";
 import { Send, CheckCircle2, Sparkles, Building2, Mail, User, Phone, DollarSign } from "lucide-react";
 
 interface InquiryModalProps {
@@ -15,7 +16,7 @@ interface InquiryModalProps {
 
 export function InquiryModal({ isOpen, onClose, defaultServiceId, defaultServiceName }: InquiryModalProps) {
   const { t, locale, isRtl, getLocalized } = useLanguage();
-  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [services, setServices] = useState<ServiceItem[]>(FALLBACK_SERVICES);
   const [serviceId, setServiceId] = useState<string>(defaultServiceId ? String(defaultServiceId) : "");
   const [serviceName, setServiceName] = useState<string>(defaultServiceName || "");
   const [name, setName] = useState("");
