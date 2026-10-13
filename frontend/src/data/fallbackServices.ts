@@ -2151,7 +2151,8 @@ export const FALLBACK_SERVICES: ServiceItem[] = [
         "note": {
           "en": "Tell us about your business. We'll show you exactly where AI and data can make the biggest difference for your team before you commit to anything.",
           "ar": "أخبرنا عن عملك وسنوضح لك أين يمكن للذكاء الاصطناعي أن يحقق أكبر نقلة نوعية لفريقك."
-        }
+        },
+        "image": "/images/services/ai-why-us.png"
       },
       {
         "id": "cta",

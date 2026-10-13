@@ -544,7 +544,7 @@ export function ServiceDetailView({ slug }: ServiceDetailProps) {
               case "why_us": {
                 const title = getLocalizedField(section.title);
                 const desc = getLocalizedField(section.description);
-                const image = section.image;
+                const image = section.image || "/images/services/why-us-laptop.png";
                 const checkpoints = section.checkpoints || [];
                 const ctaBox = section.cta_box;
                 const note = getLocalizedField(section.note);
@@ -590,28 +590,27 @@ export function ServiceDetailView({ slug }: ServiceDetailProps) {
                             <p className="text-xs text-slate-300 font-medium">
                               {getLocalizedField(ctaBox.title)}
                             </p>
-                            <button
-                              onClick={() => setIsInquiryModalOpen(true)}
-                              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors"
+                            <Link
+                              href={siteUrls.contact(locale)}
+                              className="inline-block px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors"
                             >
                               {getLocalizedField(ctaBox.button_text) || "Contact Us"}
-                            </button>
+                            </Link>
                           </div>
                         )}
                       </div>
 
                       {/* Right Column Image */}
-                      {image && (
-                        <div className="lg:col-span-5">
-                          <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-900">
-                            <img
-                              src={image}
-                              alt={title}
-                              className="w-full h-[320px] sm:h-[400px] object-cover"
-                            />
-                          </div>
+                      <div className="lg:col-span-5 h-full flex items-center justify-center">
+                        <div className="w-full h-[320px] sm:h-[400px] lg:h-[460px] rounded-3xl overflow-hidden shadow-2xl border border-blue-900/40 bg-slate-900/60 group">
+                          <img
+                            src={image}
+                            alt={title}
+                            className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                            loading="lazy"
+                          />
                         </div>
-                      )}
+                      </div>
                     </div>
                   </section>
                 );
