@@ -8,6 +8,7 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { MobileFloatingWhatsApp } from "@/components/MobileFloatingWhatsApp";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -59,6 +60,7 @@ export default function RootLayout({
             </AgencySettingsProvider>
           </AuthProvider>
         </LanguageProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   );
