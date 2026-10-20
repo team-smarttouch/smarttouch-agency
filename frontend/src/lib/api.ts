@@ -13,14 +13,14 @@ export function getBackendUrl(): string {
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, "");
   }
-  return isLocalhost() ? "http://localhost:8000" : "";
+  return isLocalhost() ? "http://localhost:8000" : "https://api-staging.smarttouch.me";
 }
 
 export function getApiBaseUrl(): string {
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  return isLocalhost() ? "http://localhost:8000/api" : "";
+  return isLocalhost() ? "http://localhost:8000/api" : "https://api-staging.smarttouch.me/api";
 }
 
 export const BACKEND_URL = getBackendUrl();
