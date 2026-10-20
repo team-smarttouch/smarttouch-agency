@@ -14,16 +14,10 @@ interface Props {
 }
 
 export function BlogPostClient({ locale, slug }: Props) {
-  const { setLocale, locale: currentLocale, isRtl, getLocalized, t } = useLanguage();
+  const { isRtl, getLocalized, t } = useLanguage();
   const [post, setPost] = useState<PostItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
-
-  useEffect(() => {
-    if (locale && (locale === "en" || locale === "ar") && currentLocale !== locale) {
-      setLocale(locale);
-    }
-  }, [locale, currentLocale, setLocale]);
 
   const cleanSlug = slug.replace(/\.html$/, "");
 

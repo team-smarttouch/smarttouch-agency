@@ -1,17 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useLanguage } from "@/context/LanguageContext";
+import React from "react";
 import HomePage from "../page";
 
 export default function ArabicHomePage() {
-  const { setLocale, locale } = useLanguage();
-
-  useEffect(() => {
-    if (locale !== "ar") {
-      setLocale("ar");
-    }
-  }, [locale, setLocale]);
-
   return <HomePage />;
 }

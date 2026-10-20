@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useLanguage } from "@/context/LanguageContext";
+import React from "react";
 import { Locale } from "@/lib/urls";
 import { AboutUsView } from "@/views/AboutUsView";
 import { ServicesHubView } from "@/views/ServicesHubView";
@@ -18,15 +17,6 @@ interface Props {
 }
 
 export function DynamicSlugPageClient({ locale, slug }: Props) {
-  const { setLocale, locale: currentLocale } = useLanguage();
-
-  // Ensure current language context matches the URL param
-  useEffect(() => {
-    if (locale && (locale === "en" || locale === "ar") && currentLocale !== locale) {
-      setLocale(locale);
-    }
-  }, [locale, currentLocale, setLocale]);
-
   // Strip .html suffix if present
   const cleanSlug = slug.replace(/\.html$/, "");
 

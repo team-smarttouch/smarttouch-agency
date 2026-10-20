@@ -5,14 +5,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
-import { siteUrls } from "@/lib/urls";
+import { siteUrls, switchLocaleUrl } from "@/lib/urls";
 import { Globe, Menu, X, ArrowUpRight } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname() || "/";
-  const { locale, toggleLocale, t, isRtl } = useLanguage();
+  const { locale, t, isRtl } = useLanguage();
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const targetLocale = locale === "en" ? "ar" : "en";
+  const switchUrl = switchLocaleUrl(pathname, targetLocale);
 
   const navLinks = [
     { name: t("nav.home"), href: siteUrls.home(locale) },
@@ -72,14 +75,14 @@ export function Navbar() {
             {/* Right Action Items */}
             <div className="hidden md:flex items-center gap-3">
               {/* Language Switcher */}
-              <button
-                onClick={toggleLocale}
+              <Link
+                href={switchUrl}
                 className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-all"
                 title="Toggle Language"
               >
                 <Globe className="w-3.5 h-3.5 text-blue-600" />
                 <span>{locale === "en" ? "العربية" : "English"}</span>
-              </button>
+              </Link>
 
               {/* Primary Blue CTA Button - Navigates directly to Contact Us */}
               <Link
@@ -117,16 +120,14 @@ export function Navbar() {
               </nav>
 
               <div className="pt-4 border-t border-slate-200 flex flex-col gap-3">
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    toggleLocale();
-                  }}
+                <Link
+                  href={switchUrl}
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="w-full py-2.5 rounded-lg bg-slate-100 text-sm font-bold text-slate-800 flex items-center justify-center gap-2"
                 >
                   <Globe className="w-4 h-4 text-blue-600" />
                   <span>{locale === "en" ? "العربية (RTL)" : "English (LTR)"}</span>
-                </button>
+                </Link>
 
                 <Link
                   href={siteUrls.contact(locale)}

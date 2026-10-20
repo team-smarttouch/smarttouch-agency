@@ -1,7 +1,7 @@
 export type Locale = "en" | "ar";
 
 export const siteUrls = {
-  home: (locale: Locale = "en") => (locale === "ar" ? "/ar/" : "/"),
+  home: (locale: Locale = "en") => (locale === "ar" ? "/ar" : "/"),
   about: (locale: Locale = "en") => `/${locale}/about-us.html`,
   services: (locale: Locale = "en") => `/${locale}/services.html`,
   serviceDetail: (slug: string, locale: Locale = "en") => {
@@ -32,7 +32,7 @@ export function switchLocaleUrl(currentPath: string, targetLocale: Locale): stri
     return currentPath;
   }
   if (currentPath === "/" || currentPath === "/ar" || currentPath === "/ar/" || currentPath === "/en" || currentPath === "/en/") {
-    return targetLocale === "ar" ? "/ar/" : "/";
+    return targetLocale === "ar" ? "/ar" : "/";
   }
   if (currentPath.startsWith("/en/")) {
     return currentPath.replace(/^\/en\//, `/${targetLocale}/`);

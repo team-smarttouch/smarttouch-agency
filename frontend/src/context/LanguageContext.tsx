@@ -117,7 +117,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       if (pathname === "/ar" || pathname === "/ar/") {
         document.title = "شركة سمارت تاتش للتسويق الالكترونى في السعودية";
       }
-    } else if (pathname.startsWith("/en") || pathname === "/") {
+    } else {
       setLocaleState("en");
       document.documentElement.dir = "ltr";
       document.documentElement.lang = "en";
