@@ -321,7 +321,7 @@ export function getMetadataForPage(pageKey: string, locale: "en" | "ar" = "en"):
   const description = meta.description[locale] || meta.description.en;
   const keywords = meta.keywords[locale] || meta.keywords.en;
 
-  const siteUrl = "https://smarttouch.me";
+  const siteUrl = "https://www.smarttouch.me";
   const canonicalUrl = `${siteUrl}/${locale}/${pageKey.replace(/\.html$/, "")}.html`;
 
   return {
@@ -333,6 +333,7 @@ export function getMetadataForPage(pageKey: string, locale: "en" | "ar" = "en"):
       languages: {
         en: `${siteUrl}/en/${pageKey.replace(/\.html$/, "")}.html`,
         ar: `${siteUrl}/ar/${pageKey.replace(/\.html$/, "")}.html`,
+        "x-default": `${siteUrl}/en/${pageKey.replace(/\.html$/, "")}.html`,
       },
     },
     openGraph: {

@@ -23,6 +23,7 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.smarttouch.me"),
   title: "Smart Touch | Digital Marketing Agency and Services in KSA",
   description: "Smart Touch is a digital marketing agency in Saudi Arabia, specializing in online marketing, web solutions, mobile apps, social media, SEO and brand transformation.",
   keywords: "digital marketing agency, Saudi Arabia, online marketing, web solutions, mobile apps, social media, SEO, Riyadh, KSA",
@@ -31,10 +32,18 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
     apple: "/favicon.ico",
   },
+  alternates: {
+    canonical: "https://www.smarttouch.me/",
+    languages: {
+      en: "https://www.smarttouch.me/",
+      ar: "https://www.smarttouch.me/ar",
+      "x-default": "https://www.smarttouch.me/",
+    },
+  },
   openGraph: {
     title: "Smart Touch | Digital Marketing Agency and Services in KSA",
     description: "Smart Touch is a digital marketing agency in Saudi Arabia, specializing in online marketing, web solutions, mobile apps, social media, SEO and brand transformation.",
-    url: "https://smarttouch.me",
+    url: "https://www.smarttouch.me",
     siteName: "Smart Touch",
     type: "website",
   },
