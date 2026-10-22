@@ -2,89 +2,48 @@
 
 import React, { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
-
-interface ProcessStep {
-  step: number;
-  label: { en: string; ar: string };
-  title: { en: string; ar: string };
-  desc: { en: string; ar: string };
-}
-
-const processSteps: ProcessStep[] = [
-  {
-    step: 1,
-    label: { en: "Lorem Ipsum", ar: "لوريم إيبسوم" },
-    title: {
-      en: "Sed ut perspiciatis unde omnis",
-      ar: "الاستكشاف وتحليل المتطلبات الرقمية",
-    },
-    desc: {
-      en: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      ar: "نقوم بدراسة متطلبات مشروعك بدقة وتحليل السوق والمنافسين لوضع خارطة طريق استراتيجية واضحة تحقق أهدافك بأعلى كفاءة.",
-    },
-  },
-  {
-    step: 2,
-    label: { en: "Lorem Ipsum", ar: "لوريم إيبسوم" },
-    title: {
-      en: "Nemo enim ipsam voluptatem",
-      ar: "الهندسة المعمارية والتصميم التفاعلي",
-    },
-    desc: {
-      en: "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.",
-      ar: "نصمم واجهات عصرية تفاعلية وأنظمة معمارية سحابية متقدمة تضمن أفضل تجربة مستخدم وسرعة فائقة في الأداء.",
-    },
-  },
-  {
-    step: 3,
-    label: { en: "Lorem Ipsum", ar: "لوريم إيبسوم" },
-    title: {
-      en: "At vero eos et accusamus",
-      ar: "التطوير البرمجي وضمان الجودة",
-    },
-    desc: {
-      en: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat.",
-      ar: "نكتب كوداً برمجياً نقياً بأحدث التقنيات مع اختبارات أداء وجودة صارمة لضمان موثوقية وأمان النظام بالكامل.",
-    },
-  },
-  {
-    step: 4,
-    label: { en: "Lorem Ipsum", ar: "لوريم إيبسوم" },
-    title: {
-      en: "Temporibus autem quibusdam",
-      ar: "الإطلاق السلس والنمو والتوسع",
-    },
-    desc: {
-      en: "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.",
-      ar: "نطلق المنصة بسلاسة مع مراقبة أداء لحظية ودعم فني متواصل وحملات تسويقية تضمن التوسع السريع والنمو.",
-    },
-  },
-];
+import { useAgencySettings, DEFAULT_HOMEPAGE_PROCESS } from "@/context/AgencySettingsContext";
 
 export function MeetOurTeam() {
   const { locale, isRtl } = useLanguage();
+  const { homepageProcess } = useAgencySettings();
   const [activeStepIndex, setActiveStepIndex] = useState(0);
 
-  const currentStep = processSteps[activeStepIndex] || processSteps[0];
+  const processData = homepageProcess || DEFAULT_HOMEPAGE_PROCESS;
+  const steps = processData.steps && processData.steps.length > 0 ? processData.steps : DEFAULT_HOMEPAGE_PROCESS.steps;
+  const currentStep = steps[activeStepIndex] || steps[0];
+
+  const headingText = locale === "ar" ? processData.heading.ar : processData.heading.en;
+  const overviewText = locale === "ar" ? processData.overview.ar : processData.overview.en;
   const stepTitle = locale === "ar" ? currentStep.title.ar : currentStep.title.en;
   const stepDesc = locale === "ar" ? currentStep.desc.ar : currentStep.desc.en;
 
   return (
     <section className="py-20 sm:py-24 bg-[#F1F7FF] border-b border-slate-100 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading matching template 100% */}
-        <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight text-center mb-8 sm:mb-10">
-          {locale === "ar" ? "منهجية عملنا" : "Here’s Our Process"}
+        {/* Section Heading matching template */}
+        <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight text-center mb-4 sm:mb-6">
+          {headingText}
         </h2>
+
+        {/* Narrative / Overview paragraph from Google Doc */}
+        {overviewText && (
+          <div className="max-w-4xl mx-auto text-center mb-10 sm:mb-12">
+            <p className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed font-normal">
+              {overviewText}
+            </p>
+          </div>
+        )}
 
         {/* 4 Process Tabs matching template 100% */}
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-14">
-          {processSteps.map((stepItem, idx) => {
+          {steps.map((stepItem, idx) => {
             const isActive = activeStepIndex === idx;
             const labelText = locale === "ar" ? stepItem.label.ar : stepItem.label.en;
 
             return (
               <button
+                type="button"
                 key={stepItem.step}
                 onClick={() => setActiveStepIndex(idx)}
                 className={`px-4 sm:px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2.5 transition-all duration-300 cursor-pointer ${
@@ -123,13 +82,18 @@ export function MeetOurTeam() {
 
           {/* Floating Dark Card Overlapping Bottom-Left matching template 100% */}
           <div
-            className={`absolute -bottom-2 sm:-bottom-4 left-4 sm:left-[8%] rtl:left-auto rtl:right-4 sm:rtl:right-[8%] w-[88%] sm:w-[50%] md:w-[38%] max-w-md p-5 sm:p-7 md:p-8 bg-[#0B1C33] text-white rounded-2xl shadow-2xl border border-slate-800/80 z-20 transition-all duration-500 ${
+            className={`absolute -bottom-2 sm:-bottom-4 left-4 sm:left-[8%] rtl:left-auto rtl:right-4 sm:rtl:right-[8%] w-[88%] sm:w-[50%] md:w-[42%] max-w-lg p-5 sm:p-7 md:p-8 bg-[#0B1C33] text-white rounded-2xl shadow-2xl border border-slate-800/80 z-20 transition-all duration-500 ${
               isRtl ? "text-right" : "text-left"
             }`}
           >
-            <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-2 leading-snug">
-              {stepTitle}
-            </h3>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2 py-0.5 rounded bg-blue-600/80 text-white text-[10px] font-bold uppercase tracking-wider">
+                {locale === "ar" ? `الخطوة ${currentStep.step}` : `Step ${currentStep.step}`}
+              </span>
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-white leading-snug">
+                {stepTitle}
+              </h3>
+            </div>
             <p className="text-[11px] sm:text-xs md:text-sm text-slate-300 leading-relaxed">
               {stepDesc}
             </p>

@@ -28,6 +28,7 @@ Route::get('/portfolios/{slug}', [PublicController::class, 'getPortfolio']);
 Route::get('/categories', [PublicController::class, 'getCategories']);
 Route::post('/inquiries', [PublicController::class, 'submitInquiry']);
 Route::get('/settings', [PublicController::class, 'getSettings']);
+Route::get('/homepage-process', [PublicController::class, 'getHomepageProcess']);
 Route::get('/clients', [PublicController::class, 'getClients']);
 
 // Auth
@@ -103,5 +104,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // File Uploads (Banner, Portfolio media, WYSIWYG images)
         Route::post('/dashboard/upload', [UploadController::class, 'upload']);
+
+        // Homepage Process Section (Admin & Content Team)
+        Route::get('/dashboard/homepage-process', [DashboardController::class, 'getHomepageProcess']);
+        Route::post('/dashboard/homepage-process', [DashboardController::class, 'updateHomepageProcess']);
     });
 });

@@ -75,7 +75,33 @@ class DashboardController extends Controller
                 'whatsapp_number' => $settings['whatsapp_number'] ?? '+966500000000',
                 'inquiry_receiver_email' => $settings['inquiry_receiver_email'] ?? 'info@smarttouch.me',
                 'featured_portfolios' => $settings['featured_portfolios'] ?? ['homefix', 'dala', 'weetas'],
+                'homepage_process' => $settings['homepage_process'] ?? null,
             ]
+        ]);
+    }
+
+    public function getHomepageProcess(Request $request)
+    {
+        $process = \App\Models\Setting::get('homepage_process');
+
+        return response()->json([
+            'success' => true,
+            'data' => $process
+        ]);
+    }
+
+    public function updateHomepageProcess(Request $request)
+    {
+        $validated = $request->validate([
+            'homepage_process' => 'required|array',
+        ]);
+
+        \App\Models\Setting::set('homepage_process', $validated['homepage_process'], 'homepage');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Homepage process section updated successfully',
+            'data' => \App\Models\Setting::get('homepage_process')
         ]);
     }
 
@@ -85,6 +111,7 @@ class DashboardController extends Controller
             'whatsapp_number' => 'nullable|string|max:50',
             'inquiry_receiver_email' => 'nullable|email|max:150',
             'featured_portfolios' => 'nullable|array',
+            'homepage_process' => 'nullable|array',
         ]);
 
         if (array_key_exists('whatsapp_number', $validated)) {
@@ -97,6 +124,10 @@ class DashboardController extends Controller
 
         if (array_key_exists('featured_portfolios', $validated)) {
             \App\Models\Setting::set('featured_portfolios', $validated['featured_portfolios'], 'general');
+        }
+
+        if (array_key_exists('homepage_process', $validated)) {
+            \App\Models\Setting::set('homepage_process', $validated['homepage_process'], 'homepage');
         }
 
         return response()->json([

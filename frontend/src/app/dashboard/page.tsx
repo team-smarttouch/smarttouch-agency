@@ -8,6 +8,7 @@ import {
 } from "@/lib/api";
 import { Modal } from "@/components/Modal";
 import { WysiwygEditor } from "@/components/WysiwygEditor";
+import { HomepageProcessEditor } from "@/components/dashboard/HomepageProcessEditor";
 import { 
   LayoutDashboard, Inbox, FileText, BookOpen, Users, Settings, 
   LogOut, Plus, Edit2, Trash2, CheckCircle, Clock, Search, 
@@ -21,7 +22,7 @@ export default function DashboardPage() {
   const { locale, setLocale, isRtl, getLocalized } = useLanguage();
 
   // Navigation tab
-  const [activeTab, setActiveTab] = useState<"overview" | "inquiries" | "posts" | "pages" | "portfolios" | "services" | "users" | "settings">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "inquiries" | "posts" | "pages" | "portfolios" | "services" | "users" | "settings" | "process">("overview");
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
@@ -1176,6 +1177,20 @@ export default function DashboardPage() {
             <span>Dynamic Pages</span>
           </button>
 
+          {(user.role === "admin" || user.role === "content") && (
+            <button
+              onClick={() => setActiveTab("process")}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === "process"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+                  : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>Homepage Process</span>
+            </button>
+          )}
+
           {user.role === "admin" && (
             <button
               onClick={() => setActiveTab("users")}
@@ -2138,6 +2153,10 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {activeTab === "process" && (user.role === "admin" || user.role === "content") && (
+          <HomepageProcessEditor />
         )}
       </div>
 

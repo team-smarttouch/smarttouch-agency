@@ -227,7 +227,18 @@ class PublicController extends Controller
                 'whatsapp_number' => $settings['whatsapp_number'] ?? '+966500000000',
                 'inquiry_receiver_email' => $settings['inquiry_receiver_email'] ?? 'info@smarttouch.me',
                 'featured_portfolios' => $settings['featured_portfolios'] ?? ['homefix', 'dala', 'weetas'],
+                'homepage_process' => $settings['homepage_process'] ?? null,
             ]
+        ]);
+    }
+
+    public function getHomepageProcess(Request $request)
+    {
+        $process = \App\Models\Setting::get('homepage_process');
+
+        return response()->json([
+            'success' => true,
+            'data' => $process
         ]);
     }
 
